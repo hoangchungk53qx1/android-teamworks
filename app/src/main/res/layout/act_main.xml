@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.main.MainActivity">
+
+
+    <RelativeLayout
+        android:id="@+id/content_relative"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/layout_toolbar" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/frm_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/lnNavBottom"
+            android:layout_below="@id/toolbar"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_corner_tr_tl" />
+
+        <include
+            android:id="@+id/fabList"
+            layout="@layout/layout_fab_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/lnNavBottom"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/lnNavBottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/white"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/viewNavBottom"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:background="@drawable/bg_shadow_top" />
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/navBottom"
+
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:backgroundTint="@color/colorPrimary"
+                app:itemIconTint="@drawable/nav_bottom_color"
+                app:itemRippleColor="@android:color/white"
+                app:itemTextColor="@drawable/nav_bottom_color"
+                app:labelVisibilityMode="selected"
+                app:menu="@menu/nav_bottom_menu" />
+
+        </LinearLayout>
+
+        <include
+            android:id="@+id/cslProgress"
+            layout="@layout/progress_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navDrawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/frag_slider"
+            android:name="com.graduation.teamwork.ui.slider.SliderFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/frag_slider" />
+
+    </com.google.android.material.navigation.NavigationView>
+
+</androidx.drawerlayout.widget.DrawerLayout>

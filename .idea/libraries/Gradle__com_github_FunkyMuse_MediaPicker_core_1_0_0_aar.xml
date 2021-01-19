@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.FunkyMuse.MediaPicker:core:1.0.0@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/83aca155495c22442190de2a9f68fff1/jetified-core-1.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/83aca155495c22442190de2a9f68fff1/jetified-core-1.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/83aca155495c22442190de2a9f68fff1/jetified-core-1.0.0/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.FunkyMuse.MediaPicker/core/1.0.0/bff266c0e82e637ff38d014c6c150d85f33d6ac5/core-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

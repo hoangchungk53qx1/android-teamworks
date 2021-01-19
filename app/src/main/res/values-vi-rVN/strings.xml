@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TeamWork</string>
+    <string name="drawer_open" translatable="false">Mở</string>
+    <string name="drawer_close" translatable="false">Đóng</string>
+    <string name="alert_ok" translatable="false">Đồng ý</string>
+    <string name="alert_cancel" translatable="false">Huỷ bỏ</string>
+    <string name="empty_value" translatable="false">Danh sách rỗng</string>
+    <string name="mail" translatable="false">email</string>
+    <string name="password" translatable="false">mật khẩu</string>
+    <string name="login" translatable="false">Đăng Nhập</string>
+    <string name="don_t_have_an_account_sign_up" translatable="false">Bạn không có tài khoản? Đăng ký ngay</string>
+    <string name="home" translatable="false">Trang chủ</string>
+    <string name="room" translatable="false">Phòng</string>
+    <string name="notifications" translatable="false">Thông báo</string>
+    <string name="profiles" translatable="false">Cá nhân</string>
+    <string name="add_task" translatable="false">Thêm công việc</string>
+    <string name="update" translatable="false">Cập nhật</string>
+    <string name="settings" translatable="false">Cài đặt</string>
+    <string name="help" translatable="false">Giúp đỡ</string>
+    <string name="profile" translatable="false">Cá nhân</string>
+    <string name="logout" translatable="false">Đăng xuất</string>
+    <string name="group" translatable="false">Nhóm</string>
+    <string name="info" translatable="false">Thông tin</string>
+    <string name="member" translatable="false">Thành viên</string>
+    <string name="activity" translatable="false">Hoạt động</string>
+    <string name="saved_tags" translatable="false">Tag đã lưu</string>
+    <string name="archived" translatable="false">Lưu trữ</string>
+    <string name="setting_room" translatable="false">Cài đặt phòng</string>
+    <string name="mark" translatable="false">Đánh đấu</string>
+    <string name="pin_in_screen" translatable="false">Ghim màn hình</string>
+    <string name="copy" translatable="false">Sao chép</string>
+    <string name="share" translatable="false">Chia sẻ</string>
+    <string name="add_room" translatable="false">Thêm phòng</string>
+    <string name="name_room" translatable="false">Tên phòng</string>
+    <string name="search" translatable="false">Tìm kiếm...</string>
+    <string name="add_stage" translatable="false">Thêm giai đoạn</string>
+    <string name="loading_message" translatable="false">Đang tải...</string>
+    <string name="notify_empty_stage" translatable="false">Tên không thể trống</string>
+    <string name="notify_connect_wifi" translatable="false">Vui lòng kiểm tra lại wifi của bạn</string>
+    <string name="add_group" translatable="false">Thêm nhóm</string>
+    <string name="open_settings" translatable="false">Mở cài đặt</string>
+    <string name="loading_message_login" translatable="false">Đăng nhập...</string>
+    <string name="notifi_error_wifi" translatable="false">email hoặc mật khẩu sai, vui lòng nhập lại</string>
+    <string name="notifi_success_add_room" translatable="false">thêm phòng thành công</string>
+    <string name="notify_error_name_empty" translatable="false">tên không thể trống</string>
+    <string name="notify_error_group" translatable="false">thêm lỗi, vui lòng thử lại sau</string>
+    <string name="task" translatable="false">Công việc</string>
+    <string name="username" translatable="false">Họ tên</string>
+    <string name="suggest_register" translatable="false">Bạn không có tài khoản?</string>
+    <string name="sign_up" translatable="false">" Đăng ký ngay"</string>
+    <string name="suggest_login" translatable="false">Bạn đã có tài khoản?</string>
+    <string name="sign_in" translatable="false">" Đăng nhập"</string>
+    <string name="register" translatable="false">Đăng ký</string>
+    <string name="per_require_storage" translatable="false">Yêu cầu quyền xem ảnh</string>
+    <string name="select_file" translatable="false">Chọn ảnh</string>
+    <string name="infomation" translatable="false">Thông tin</string>
+    <string name="edit_user" translatable="false">Chỉnh sửa</string>
+    <string name="change_password" translatable="false">Đổi mật khẩu</string>
+    <string name="add_member" translatable="false">Thêm thành viên</string>
+    <string name="name_stage" translatable="false">tên giai đoạn</string>
+    <string name="add_member_mail" translatable="false">mail</string>
+    <string name="dialog_add_task" translatable="false">tên công việc</string>
+</resources>

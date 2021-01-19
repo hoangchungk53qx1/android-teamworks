@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "629043600230",
+    "firebase_url": "https://teamworks-91376-default-rtdb.firebaseio.com",
+    "project_id": "teamworks-91376",
+    "storage_bucket": "teamworks-91376.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629043600230:android:e8d42c20e80686fb0446a7",
+        "android_client_info": {
+          "package_name": "com.graduation.teamwork"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "629043600230-72v4hkg27b566d4eiv3lbomhts9aeed5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3mXglFFGvK_9yXqsnQIQeclnOXX4wO2w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "629043600230-72v4hkg27b566d4eiv3lbomhts9aeed5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

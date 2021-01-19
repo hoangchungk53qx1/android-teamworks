@@ -1,0 +1,78 @@
+<resources>
+    <string name="app_name">TeamWork</string>
+
+    <string name="drawer_open" translatable="false">OPEN</string>
+    <string name="drawer_close" translatable="false">CLOSE</string>
+
+    <string name="alert_ok" translatable="false">OK</string>
+    <string name="alert_cancel" translatable="false">CANCEL</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="empty_value" translatable="false">No item exists</string>
+    <string name="mail" translatable="false">Mail</string>
+    <string name="password" translatable="false">Password</string>
+    <string name="login" translatable="false">Login</string>
+    <string name="register" translatable="false">Register</string>
+    <string name="don_t_have_an_account_sign_up" translatable="false">Don\'t have an account ? Sign up</string>
+    <string name="home" translatable="false">Home</string>
+    <string name="room" translatable="false">Room</string>
+    <string name="notifications" translatable="false">Notifications</string>
+    <string name="profiles" translatable="false">Profiles</string>
+    <string name="add_task" translatable="false">Add task</string>
+    <string name="update" translatable="false">Update</string>
+    <string name="settings" translatable="false">Settings</string>
+    <string name="help" translatable="false">Help</string>
+    <string name="profile" translatable="false">Profile</string>
+    <string name="logout" translatable="false">Logout</string>
+    <string name="group" translatable="false">Group</string>
+    <string name="info" translatable="false">Info</string>
+    <string name="member" translatable="false">Members</string>
+    <string name="activity" translatable="false">Activity</string>
+    <string name="power_ups" translatable="false">Power-Ups</string>
+    <string name="saved_tags" translatable="false">Saved tags</string>
+    <string name="archived" translatable="false">Archived</string>
+    <string name="setting_room" translatable="false">Setting room</string>
+    <string name="mark" translatable="false">Mark</string>
+    <string name="pin_in_screen" translatable="false">Pin in screen</string>
+    <string name="copy" translatable="false">Copy</string>
+    <string name="share" translatable="false">Share</string>
+    <string name="add_room" translatable="false">Add Room</string>
+    <string name="name_room" translatable="false">name room</string>
+    <string name="search" translatable="false">Search...</string>
+    <string name="add_stage" translatable="false">Add stage</string>
+    <string name="loading_message" translatable="false">PLease wait...</string>
+    <string name="notify_empty_stage" translatable="false">Stage can\'t empty</string>
+    <string name="notify_connect_wifi" translatable="false">Please connect wifi</string>
+    <string name="add_group" translatable="false">Add group</string>
+    <string name="open_settings" translatable="false">Open Settings</string>
+    <string name="loading_message_login" translatable="false">Login....</string>
+    <string name="notifi_error_wifi" translatable="false">Error mail or password, please try again</string>
+    <string name="notifi_success_add_room" translatable="false">add room success</string>
+    <string name="notify_error_name_empty" translatable="false">Name can\'t empty</string>
+    <string name="notify_error_group" translatable="false">Add error, please try again!</string>
+    <string name="task" translatable="false">Task</string>
+    <string name="username" translatable="false">Full name</string>
+    <string name="suggest_register" translatable="false">Don\'t have an account?</string>
+    <string name="sign_up" translatable="false"> sign up</string>
+    <string name="suggest_login" translatable="false">You have account?</string>
+    <string name="sign_in" translatable="false">" sign in"</string>
+    <string name="select_file" translatable="false">Select Image</string>
+    <string name="per_require_storage" translatable="false">Require Storage</string>
+    <string name="infomation" translatable="false">Infomation</string>
+    <string name="edit_user" translatable="false">Edit User</string>
+    <string name="change_password" translatable="false">Change Password</string>
+    <string name="add_member" translatable="false">add member</string>
+    <string name="name_stage" translatable="false">name stage</string>
+    <string name="add_member_mail" translatable="false">mail</string>
+    <string name="dialog_add_task" translatable="false">name task</string>
+
+    <string name="notification_title" translatable="false">Task đã đến hạn </string>
+    <string name="notification_subtitle" translatable="false">Surprise!</string>
+
+    <string name="notification_schedule_title" translatable="false">Đã lên lịch:\u00a0</string>
+    <string name="notification_schedule_pattern" translatable="false">dd.MM.yy \u00B7 HH:mm</string>
+    <string name="notification_schedule_error" translatable="false">
+        Schedule notification: Incorrect Date and Time
+    </string>
+    <string name="send_slide_member">send_slide_member</string>
+</resources>
