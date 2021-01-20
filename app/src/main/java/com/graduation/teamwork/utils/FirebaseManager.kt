@@ -108,7 +108,7 @@ class FirebaseManager(
     }
 
     fun readAll(currentIdUser: String, rooms: List<DtRoom>?) {
-        Log.d(TAG, "readAll: ${rooms?.size} - ${currentIdUser}")
+        Log.d(TAG, "readAll: ${rooms?.size} - $currentIdUser")
 //
 //        rooms?.map { it.users }
 //            ?.forEach {
@@ -134,7 +134,6 @@ class FirebaseManager(
                     dataMap.keys.forEach { item ->
                         val dataItem = dataMap[item] as HashMap<*, *>
                         val dataString = JSONObject(dataItem).toString()
-
                         val key = category
                         var values = data[key]?.toMutableList()
 
