@@ -1,10 +1,8 @@
 package com.graduation.teamwork.ui.slider
 
 import SlideExplode
-import android.animation.ObjectAnimator
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,31 +14,31 @@ import androidx.transition.*
 import com.graduation.teamwork.R
 import com.graduation.teamwork.data.local.Constant
 import com.graduation.teamwork.databinding.FragSliderRoomBinding
-import com.graduation.teamwork.extensions.fromJson
-import com.graduation.teamwork.extensions.fromObject
 import com.graduation.teamwork.extensions.showToast
 import com.graduation.teamwork.extensions.toJson
+import com.graduation.teamwork.extensions.toObject
 import com.graduation.teamwork.models.DtRoom
-import com.graduation.teamwork.models.DtStage
 import com.graduation.teamwork.ui.base.BaseFragment
-import com.graduation.teamwork.ui.task.TaskActivity
-import com.graduation.teamwork.ui.task.details.member.MemberDetailFragment
+import com.graduation.teamwork.ui.room.details.RoomDetailActivity
+import com.graduation.teamwork.ui.room.details.member.MemberDetailFragment
+import org.koin.core.component.KoinApiExtension
 import setCommonInterpolator
 
 private val transitionInterpolator = FastOutSlowInInterpolator()
 private const val TRANSITION_DURATION = 300L
 private const val TAP_POSITION = "tap_position"
 
-class SliderRoomFragment : BaseFragment<FragSliderRoomBinding, TaskActivity>() {
+@KoinApiExtension
+class SliderRoomFragment : BaseFragment<FragSliderRoomBinding, RoomDetailActivity>() {
     override fun setBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
     ): FragSliderRoomBinding = FragSliderRoomBinding.inflate(inflater, container, false)
 
-    private var tapPosition = NO_POSITION
-    val viewRect = Rect()
+    private lateinit var mRoom: DtRoom
 
-    lateinit var mRoom: DtRoom
+    private var tapPosition = NO_POSITION
+    private val viewRect = Rect()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,7 +46,7 @@ class SliderRoomFragment : BaseFragment<FragSliderRoomBinding, TaskActivity>() {
         savedInstanceState: Bundle?
     ): View? {
         arguments?.run {
-            mRoom = this.getString(Constant.INTENT.ROOM.value)!!.fromObject<DtRoom>()!!
+            mRoom = this.getString(Constant.IntentKey.ROOM.value)!!.toObject<DtRoom>()!!
         }
 
         return super.onCreateView(inflater, container, savedInstanceState)
@@ -63,7 +61,7 @@ class SliderRoomFragment : BaseFragment<FragSliderRoomBinding, TaskActivity>() {
         setupListener()
     }
 
-    fun setupViews() {
+    private fun setupViews() {
         startPostponedEnterTransition()
 
         binding?.run {
@@ -78,16 +76,10 @@ class SliderRoomFragment : BaseFragment<FragSliderRoomBinding, TaskActivity>() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(TAP_POSITION, tapPosition)
-    }
-
     private fun setupListener() {
         binding?.run {
             icSliderActivity.setOnClickListener {
                 context?.showToast("Activity")
-
             }
             icSliderArchived.setOnClickListener {
                 context?.showToast("Archived")
@@ -118,8 +110,12 @@ class SliderRoomFragment : BaseFragment<FragSliderRoomBinding, TaskActivity>() {
                 actionClickedMember(SLIDE_ROOM_POSITION.MEMBER.value)
             }
 
-//            handler?.closeDrawerTask()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(TAP_POSITION, tapPosition)
     }
 
     private fun actionClickedMember(position: Int) {
@@ -158,25 +154,12 @@ class SliderRoomFragment : BaseFragment<FragSliderRoomBinding, TaskActivity>() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @return A new instance of fragment SliderRoomFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(room: DtRoom): SliderRoomFragment {
-
-            val bundle = Bundle().apply {
-                putString(Constant.INTENT.ROOM.value, room.toJson())
-            }
-
-            return SliderRoomFragment().apply {
-                arguments = bundle
-            }
+        fun newInstance(room: DtRoom): SliderRoomFragment = SliderRoomFragment().apply {
+            arguments = Bundle().apply { putString(Constant.IntentKey.ROOM.value, room.toJson()) }
         }
     }
+
 }
 
 enum class SLIDE_ROOM_POSITION(val value: Int) {

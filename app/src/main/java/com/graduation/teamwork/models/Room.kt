@@ -12,7 +12,6 @@ import kotlinx.android.parcel.Parcelize
  */
 
 @Parcelize
-//@Entity(tableName = Constant.TABLE_ROOM.RROOM)
 data class Room(
     val message: String? = null,
     val totalResult: Long? = null,
@@ -23,7 +22,6 @@ data class Room(
 ) : Parcelable
 
 @Parcelize
-//@Entity(tableName = Constant.TABLE_ROOM.DTROOM)
 data class DtRoom(
     val isHighlight: Boolean? = null,
     val modify: Long? = null,
@@ -40,7 +38,6 @@ data class DtRoom(
     val _id: String? = null,
     val users: List<UserInRoom>? = null,
     val deadline: Long? = null,
-//    val history: List<History?>? = null,
     val stages: List<DtStage?>? = null,
 
     @Json(name = "__v")

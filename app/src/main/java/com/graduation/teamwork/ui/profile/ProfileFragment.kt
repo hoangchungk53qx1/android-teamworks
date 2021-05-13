@@ -1,24 +1,17 @@
 package com.graduation.teamwork.ui.profile
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
-import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.observe
 import androidx.loader.content.CursorLoader
@@ -26,8 +19,8 @@ import com.bumptech.glide.Glide
 import com.crazylegend.imagepicker.pickers.SingleImagePicker
 import com.graduation.teamwork.R
 import com.graduation.teamwork.databinding.FragProfileBinding
-import com.graduation.teamwork.extensions.gone
-import com.graduation.teamwork.extensions.visiable
+import com.graduation.teamwork.extensions.hideKeyboard
+import com.graduation.teamwork.extensions.setVisiable
 import com.graduation.teamwork.models.DtUser
 import com.graduation.teamwork.ui.base.BaseFragment
 import com.graduation.teamwork.ui.login.LoginActivity
@@ -36,130 +29,88 @@ import com.graduation.teamwork.utils.PrefsManager
 import com.graduation.teamwork.utils.eventbus.RxBus
 import com.graduation.teamwork.utils.eventbus.RxEvent
 import es.dmoral.toasty.Toasty
-import kotlinx.android.synthetic.main.act_login.*
-import kotlinx.android.synthetic.main.frag_profile.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.koin.android.ext.android.inject
+import org.koin.core.component.KoinApiExtension
 import java.io.File
 
+@KoinApiExtension
 class ProfileFragment : BaseFragment<FragProfileBinding, MainActivity>() {
     override fun setBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
     ): FragProfileBinding = FragProfileBinding.inflate(inflater, container, false)
 
+    /**
+     * INJECT
+     */
     private val viewModel: ProfileViewModel by inject()
     private val prefs: PrefsManager by inject()
 
-    // data
-    companion object {
-        const val PICK_PHOTO = 122
-    }
-
     private var currentUser: DtUser? = prefs.getUser()
-
-    private val TAG = "__ProfileFragment"
-
-    //intent
-    private val registerPhotoLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = it.data
-
-                if (data != null) {
-                    val uri = data.data
-                    upload(uri)
-                }
-            }
-        }
+    private var typeEdit = ProfileEditType.NONE
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViews()
+        setupListener()
         getProfile()
-        setUpListener()
     }
 
-    @SuppressLint("ResourceAsColor")
-//    @RequiresApi(Build.VERSION_CODES.O)
-    private fun setUpListener() {
-        // view
-        binding?.run {
-            rlLogout.setOnClickListener {
-                if (currentUser != null) {
-                    viewModel.logout(currentUser!!._id!!)
-                    prefs.clearUser()
-                    Intent(requireContext(), LoginActivity::class.java).also {
-                        it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(it)
-                    }
-                }
-            }
-            tvEditUser.setOnClickListener {
-                tvConfirmUser.visiable()
-                turnOffClicked(isEnable = true)
-                tvEditUser.setTextColor(R.color.blackColor)
-                tvEditPassword.setTextColor(R.color.blue)
-                rlLogout.setTextColor(R.color.blue)
-            }
-            tvConfirmUser.setOnClickListener {
-                if (currentUser != null) {
-                    handler?.showProgress()
-                    viewModel.updateInfoUser(
-                        currentUser!!._id!!,
-                        binding?.edtMail?.text.toString(),
-                        binding?.edtPhoneNumber?.text.toString(),
-                        binding?.edtCity?.text.toString()
-                    )
-                }
-            }
-            tvEditPassword.setOnClickListener {
-                tvComfirmPassword.visiable()
-                rlPasword.visiable()
-                rlPersonalInfo.gone()
-                tvEditUser.setTextColor(R.color.blue)
-                tvEditPassword.setTextColor(R.color.blackColor)
-                rlLogout.setTextColor(R.color.blue)
-            }
-            tvComfirmPassword.setOnClickListener {
-                if (currentUser != null) {
-                    handler?.showProgress()
-                    val current = edtCurrentPassword.text.toString()
-                    val newPasword = edtNewPassword.text.toString()
-                    val confirmPassword = edtConfirmPassword.text.toString()
-                    if (current.isBlank() || newPasword.isBlank() || confirmPassword.isBlank()) {
-                        handler?.hideProgres()
-                        Toasty.warning(
-                            context?.applicationContext!!,
-                            "This field is required",
-                            Toast.LENGTH_SHORT,
-                            true
-                        ).show()
-                        return@setOnClickListener
-                    } else if (!newPasword.equals(confirmPassword)) {
-                        handler?.hideProgres()
-                        Toasty.warning(
-                            context?.applicationContext!!,
-                            "passwords do not match",
-                            Toast.LENGTH_SHORT,
-                            true
-                        ).show()
-                        return@setOnClickListener
-                    } else {
-                        viewModel.updatePassword(
-                            currentUser!!._id!!,
-                            binding?.edtCurrentPassword?.text.toString(),
-                            binding?.edtConfirmPassword?.text.toString()
-                        )
-                    }
-                } else {
-                    viewModel.logout(currentUser!!._id!!)
-                }
-            }
-            imgProfile.setOnClickListener {
+    private fun setupViews() {
+        handler?.run {
+            showFloatActionButton(isShow = false)
+            showToolbar(isShow = true)
+        }
 
+        binding?.run {
+            tvTotalGroup.text = "${prefs.getTotalGroup()}"
+            tvTotalRoom.text = "${prefs.getTotalRoom()}"
+        }
+    }
+
+    private fun setupDefaultData() {
+        binding?.run {
+            Glide.with(this@ProfileFragment)
+                .load(R.drawable.ic_call_24dp)
+                .into(imgPhoneNumber)
+            Glide.with(this@ProfileFragment)
+                .load(R.drawable.ic_location_24dp)
+                .into(imgCity)
+            Glide.with(this@ProfileFragment)
+                .load(R.drawable.ic_email_24dp)
+                .into(imgMail)
+            Glide.with(this@ProfileFragment)
+                .load(currentUser?.image?.url ?: R.drawable.default_avatar)
+                .into(imgProfile)
+
+            edtMail.hint = ""
+            edtCity.hint = ""
+            edtPhoneNumber.hint = ""
+            edtMail.setText(currentUser?.mail ?: "")
+            edtCity.setText(currentUser?.city ?: "")
+            edtPhoneNumber.setText(currentUser?.numberphone ?: "")
+
+            tvUserId.text = currentUser?._id ?: ""
+            tvUsername.text = currentUser?.fullname ?: ""
+            tvTitleProfile.text = getString(R.string.infomation)
+
+            edtMail.isEnabled = false
+            edtCity.isEnabled = false
+            edtPhoneNumber.isEnabled = false
+            tvConfirmUser.setVisiable(false)
+
+            tvEditUser.setTextColor(Color.BLACK)
+            tvEditPassword.setTextColor(Color.BLACK)
+        }
+    }
+
+    private fun setupListener() {
+        binding?.run {
+            imgProfile.setOnClickListener {
                 if (ActivityCompat.checkSelfPermission(
                         requireContext(),
                         Manifest.permission.READ_EXTERNAL_STORAGE
@@ -170,133 +121,275 @@ class ProfileFragment : BaseFragment<FragProfileBinding, MainActivity>() {
                 SingleImagePicker.showPicker(requireContext()) {
                     upload(it.contentUri)
                 }
-
             }
-        }
 
-        // view model
-        viewModel.resources.observe(viewLifecycleOwner, {
-            handler?.hideProgres()
-            if (!it.data.isNullOrEmpty() && it.data.isNotEmpty()) {
-
-                this.currentUser = it.data[0]
-
-                this.updateProfile(this.currentUser!!)
-
+            tvEditPassword.setOnClickListener {
+                tvEditUser.setTextColor(Color.BLACK)
+                tvEditPassword.setTextColor(Color.BLUE)
+                isEditProfile(true, ProfileEditType.PASSWORD)
             }
-        })
-        viewModel.resourceUpdate.observe(viewLifecycleOwner, {
-            handler?.hideProgres()
-            if (!it.data.isNullOrEmpty() && it.data.isNotEmpty()) {
-                turnOffClicked(isEnable = false)
-                binding?.tvConfirmUser?.gone()
 
-                this.currentUser = it.data[0]
-                binding?.tvUsername?.text = currentUser!!.fullname
-                binding?.idUser?.text = currentUser!!._id
-                binding?.edtMail?.setText(currentUser!!.mail)
-                binding?.edtCity?.setText(currentUser!!.city)
-                binding?.edtPhoneNumber?.setText(currentUser!!.numberphone)
+            tvEditUser.setOnClickListener {
+                tvEditUser.setTextColor(Color.BLUE)
+                tvEditPassword.setTextColor(Color.BLACK)
+                isEditProfile(true, ProfileEditType.PROFILE)
             }
-        })
-        viewModel.resourceUpdatePassword.observe(viewLifecycleOwner, { it ->
-            handler?.hideProgres()
-            if (!it.data?.data.isNullOrEmpty()) {
-                Toasty.success(
-                    context?.applicationContext!!,
-                    "Change password success",
-                    Toast.LENGTH_SHORT,
-                    true
-                ).show()
 
-                it.data?.data?.first()?.let { it1 ->
-                    prefs.saveUser(it1)
+            tvConfirmUser.setOnClickListener {
+                val mailOrigin = currentUser?.mail ?: ""
+                val cityOrigin = currentUser?.city ?: ""
+                val numberPhoneOrigin = currentUser?.numberphone ?: ""
+
+                val mailOrNewPasswordInput = edtMail.text.toString()
+                val cityOrConfirmPasswordInput = edtCity.text.toString()
+                val numberPhoneOldPasswordInput = edtPhoneNumber.text.toString()
+
+                if (
+                    (mailOrNewPasswordInput.isBlank() && cityOrConfirmPasswordInput.isBlank() && numberPhoneOldPasswordInput.isBlank())
+                    or
+                    (mailOrNewPasswordInput == mailOrigin && cityOrConfirmPasswordInput == cityOrigin && numberPhoneOldPasswordInput == numberPhoneOrigin)
+                ) {
+                    setupDefaultData()
+                } else if (typeEdit == ProfileEditType.PASSWORD &&
+                    (mailOrNewPasswordInput.isBlank() || cityOrConfirmPasswordInput.isBlank() || numberPhoneOldPasswordInput.isBlank())
+                ) {
+                    Toasty.warning(
+                        context?.applicationContext!!,
+                        "This field is required",
+                        Toast.LENGTH_SHORT,
+                        true
+                    ).show()
+                } else {
+                    if (typeEdit == ProfileEditType.PROFILE) {
+                        viewModel.updateInfoUser(
+                            id = currentUser?._id!!,
+                            mail = mailOrNewPasswordInput,
+                            phone = numberPhoneOldPasswordInput,
+                            city = cityOrConfirmPasswordInput
+                        )
+                    } else if (typeEdit == ProfileEditType.PASSWORD) {
+                        viewModel.updatePassword(
+                            id = currentUser?._id!!,
+                            oldPassword = numberPhoneOldPasswordInput,
+                            newPassword = mailOrNewPasswordInput
+                        )
+                    }
+
+                    edtCity.hideKeyboard()
+                    edtMail.hideKeyboard()
+                    edtPhoneNumber.hideKeyboard()
+                    handler?.showProgress()
+
                 }
-            } else {
-                Toasty.error(
-                    context?.applicationContext!!,
-                    "Change password error!",
-                    Toast.LENGTH_SHORT,
-                    true
-                ).show()
             }
-        })
-        viewModel.resourceUpdateAvatar.observe(viewLifecycleOwner, {
-            handler?.hideProgres()
-
-            if (!it.data.isNullOrEmpty()) {
-                Toasty.success(
-                    context?.applicationContext!!,
-                    "Up load Success",
-                    Toast.LENGTH_SHORT,
-                    true
-                ).show()
-
-                this.currentUser = it.data[0]
-
-                this.updateProfile(this.currentUser!!)
-                this.prefs.saveUser(this.currentUser!!)
-                RxBus.publishToPublishSubject(RxEvent.UpdateAvatar)
-            } else {
-                Toasty.error(
-                    context?.applicationContext!!,
-                    "Change avatar error!",
-                    Toast.LENGTH_SHORT,
-                    true
-                ).show()
+            rlLogout.setOnClickListener {
+                viewModel.logout(currentUser!!._id!!)
+                prefs.clearUser()
+                Toasty.normal(requireContext(), "Tạm biệt ${currentUser?.fullname}").show()
+                Intent(requireContext(), LoginActivity::class.java).also {
+                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(it)
+                }
             }
-        })
+
+            with(viewModel) {
+                resources.observe(viewLifecycleOwner) {
+                    handler?.hideProgress()
+                    if (!it.data.isNullOrEmpty() && it.data.isNotEmpty()) {
+
+                        this@ProfileFragment.currentUser = it.data[0]
+                        setupDefaultData()
+                    }
+                }
+
+                resourceUpdate.observe(viewLifecycleOwner) {
+                    handler?.hideProgress()
+
+                    if (!it.data.isNullOrEmpty()) {
+                        this@ProfileFragment.currentUser = it.data.first()
+                        prefs.saveUser(it.data.first())
+                    }
+
+                    setupDefaultData()
+                }
+
+                resourceUpdatePassword.observe(viewLifecycleOwner) {
+                    handler?.hideProgress()
+                    if (!it.data?.data.isNullOrEmpty()) {
+                        Toasty.success(
+                            context?.applicationContext!!,
+                            "Change password success",
+                            Toast.LENGTH_SHORT,
+                            true
+                        ).show()
+
+                        it.data?.data?.first()?.let {
+                            prefs.saveUser(it)
+                            this@ProfileFragment.currentUser = it
+                        }
+                    } else {
+                        Toasty.error(
+                            context?.applicationContext!!,
+                            "Change password error!",
+                            Toast.LENGTH_SHORT,
+                            true
+                        ).show()
+                    }
+                    setupDefaultData()
+                }
+
+                resourceUpdate.observe(viewLifecycleOwner) {
+                    handler?.hideProgress()
+
+                    if (!it.data.isNullOrEmpty()) {
+                        Toasty.success(
+                            context?.applicationContext!!,
+                            "Update profile success",
+                            Toast.LENGTH_SHORT,
+                            true
+                        ).show()
+
+                        this@ProfileFragment.run {
+                            currentUser = it.data[0]
+                            setupDefaultData()
+                            prefs.saveUser(currentUser!!)
+                        }
+                        RxBus.publishToPublishSubject(RxEvent.UpdateAvatar)
+                    } else {
+                        Toasty.error(
+                            context?.applicationContext!!,
+                            "Update profile error!",
+                            Toast.LENGTH_SHORT,
+                            true
+                        ).show()
+                    }
+                }
+
+                resourceUpdateAvatar.observe(viewLifecycleOwner) {
+                    handler?.hideProgress()
+
+                    if (!it.data.isNullOrEmpty()) {
+                        Toasty.success(
+                            context?.applicationContext!!,
+                            "Up load Success",
+                            Toast.LENGTH_SHORT,
+                            true
+                        ).show()
+
+                        this@ProfileFragment.run {
+                            currentUser = it.data[0]
+                            prefs.saveUser(currentUser!!)
+                        }
+
+                        RxBus.publishToPublishSubject(RxEvent.UpdateAvatar)
+                    } else {
+                        Toasty.error(
+                            context?.applicationContext!!,
+                            "Change avatar error!",
+                            Toast.LENGTH_SHORT,
+                            true
+                        ).show()
+                    }
+                    setupDefaultData()
+                }
+            }
+
+        }
     }
 
-    private fun updateProfile(user: DtUser) {
-        handler?.hideProgres()
-
-        Glide.with(this)
-            .load(user.image?.url)
-            .placeholder(R.drawable.bg_demo_1)
-            .into(img_profile)
-
-        binding?.tvUsername?.text = user.fullname
-        binding?.idUser?.text = user._id
-        binding?.edtMail?.setText(user.mail)
-        binding?.edtCity?.setText(user.city)
-        binding?.edtPhoneNumber?.setText(user.numberphone)
-    }
-
+    @KoinApiExtension
     private fun upload(uri: Uri?) {
         if (uri == null) {
             return
         }
 
-        handler?.showProgress()
         val file = File(getRealPathFromURI(uri) ?: "")
 
-        val photoContent: RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file)
+        val photoContent: RequestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
         val part = MultipartBody.Part.createFormData(
             "image", file.name, photoContent
         )
 
         viewModel.updateAvatar(currentUser!!._id!!, part)
+        handler?.showProgress()
     }
 
-    private fun turnOffClicked(isEnable: Boolean) {
-        binding?.run {
-            binding?.edtMail?.isEnabled = isEnable
-            binding?.edtPhoneNumber?.isEnabled = isEnable
-            binding?.edtCity?.isEnabled = isEnable
-        }
-    }
-
-    private fun setupViews() {
-        handler?.run {
-            showFloatActionButton(isShow = false)
-            showToolbar(isShow = true)
-            turnOffClicked(isEnable = false)
-        }
+    private fun isEditProfile(
+        isEdit: Boolean = false,
+        type: ProfileEditType = ProfileEditType.NONE
+    ) {
+        typeEdit = type
 
         binding?.run {
-            tvTotalGroup.text = "${prefs.getTotalGroup()}"
-            tvTotalRoom.text = "${prefs.getTotalRoom()}"
+            edtMail.isEnabled = isEdit
+            edtCity.isEnabled = isEdit
+            edtPhoneNumber.isEnabled = isEdit
+            tvConfirmUser.setVisiable(isEdit)
+
+            when (type) {
+                ProfileEditType.PROFILE -> {
+                    Glide.with(this@ProfileFragment)
+                        .load(R.drawable.ic_call_24dp)
+                        .into(imgPhoneNumber)
+
+                    Glide.with(this@ProfileFragment)
+                        .load(R.drawable.ic_location_24dp)
+                        .into(imgCity)
+
+                    Glide.with(this@ProfileFragment)
+                        .load(R.drawable.ic_email_24dp)
+                        .into(imgMail)
+
+                    edtPhoneNumber.hint = "Nhập số điện thoại"
+                    edtMail.hint = "Nhập email"
+                    edtCity.hint = "Nhập thành phố"
+
+                    edtPhoneNumber.setText(currentUser?.numberphone ?: "")
+                    edtMail.setText(currentUser?.mail ?: "")
+                    edtCity.setText(currentUser?.city ?: "")
+
+                    tvTitleProfile.text = getString(R.string.infomation)
+                }
+                ProfileEditType.PASSWORD -> {
+                    Glide.with(this@ProfileFragment)
+                        .load(R.drawable.ic_key)
+                        .into(imgPhoneNumber)
+
+                    Glide.with(this@ProfileFragment)
+                        .load(R.drawable.ic_key)
+                        .into(imgCity)
+
+                    Glide.with(this@ProfileFragment)
+                        .load(R.drawable.ic_key)
+                        .into(imgMail)
+
+                    edtPhoneNumber.hint = "Mật khẩu cũ"
+                    edtMail.hint = "Mật khẩu mới"
+                    edtCity.hint = "Nhập lại mật khẩu"
+
+                    edtPhoneNumber.setText("")
+                    edtMail.setText("")
+                    edtCity.setText("")
+
+                    tvTitleProfile.text = "Password"
+                }
+                // NONE
+                else -> {
+                    Glide.with(this@ProfileFragment)
+                        .load(R.drawable.ic_call_24dp)
+                        .into(imgPhoneNumber)
+
+                    Glide.with(this@ProfileFragment)
+                        .load(R.drawable.ic_location_24dp)
+                        .into(imgCity)
+
+                    Glide.with(this@ProfileFragment)
+                        .load(R.drawable.ic_email_24dp)
+                        .into(imgMail)
+
+                    tvTitleProfile.text = getString(R.string.infomation)
+                }
+            }
         }
     }
 
@@ -307,14 +400,12 @@ class ProfileFragment : BaseFragment<FragProfileBinding, MainActivity>() {
         }
         if (currentUser == null) {
             currentUser = prefs.getUser()
-        }
-
-        if (currentUser != null) {
-            this.updateProfile(this.currentUser!!)
+        } else {
+            setupDefaultData()
         }
     }
 
-    fun getRealPathFromURI(contentUri: Uri?): String? {
+    private fun getRealPathFromURI(contentUri: Uri?): String? {
         val proj = arrayOf(MediaStore.Images.Media.DATA)
         val loader = contentUri?.let {
             CursorLoader(
@@ -335,15 +426,14 @@ class ProfileFragment : BaseFragment<FragProfileBinding, MainActivity>() {
             cursor.getString(it)
         }
         cursor?.close()
-
         return result
     }
-
 
     override fun onResume() {
         super.onResume()
         if (currentUser == null) {
             handler?.showProgress()
         }
+        setupDefaultData()
     }
 }

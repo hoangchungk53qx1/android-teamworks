@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg">
+    android:background="@drawable/bg_demo">
 
     <View
         android:layout_width="match_parent"
@@ -104,7 +104,8 @@
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
                     android:padding="15dp"
-                    android:src="@drawable/username" />
+                    android:src="@drawable/ic_mail"
+                    app:tint="@color/mdtp_white" />
 
                 <EditText
                     android:id="@+id/edtMail"
@@ -226,11 +227,4 @@
 
     </LinearLayout>
 
-    <include
-        android:id="@+id/cslProgress"
-        layout="@layout/progress_dialog"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:visibility="gone" />
 </RelativeLayout>

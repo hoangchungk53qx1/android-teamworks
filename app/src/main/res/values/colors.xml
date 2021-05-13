@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#1976D2</color>
-    <color name="colorAccent">#03A9F4</color>
+    <color name="colorPrimary">#5eaaa8</color>
+    <color name="colorPrimaryDark">#5eaaa8</color>
+    <color name="colorAccent">#a3d2ca</color>
     <color name="primaryText">#212121</color>
     <color name="lightPrimary">#BBDEFB</color>
     <color name="dividerColor">#BDBDBD</color>
@@ -11,10 +11,10 @@
     <color name="blackColor">#0C0C0C</color>
     <color name="accentGreen">#80CBC4</color>
 
-    <color name="colorPrimaryTask">#3F51B5</color>
-    <color name="colorPrimaryDarkTask">#303F9F</color>
+    <color name="colorPrimaryTask">#5eaaa8</color>
+    <color name="colorPrimaryDarkTask">#5eaaa8</color>
 
-
+    <color name="blackSemiTransparent">#B2000000</color>
     <color name="grey">#E9EAEE</color>
     <color name="yellow">#F8BA0F</color>
     <color name="goodgrey">#535353</color>
@@ -24,4 +24,20 @@
     <color name="gradStart">#63C9FF</color>
 
     <color name="Transparent">#00000000</color>
+    <color name="profile">#293859</color>
+    <color name="profilePrimary">#202E4C</color>
+    <color name="bg_gray">#ECECEC</color>
+
+    <color name="label_red">#DB4035</color>
+    <color name="label_orange">#FF9933</color>
+    <color name="label_yellow">#FAD000</color>
+    <color name="label_oliveGreen">#AFB83B</color>
+    <color name="label_green">#299438</color>
+    <color name="label_minGreen">#6ACCBC</color>
+    <color name="label_skyBlue">#14AAF5</color>
+    <color name="label_blue">#4073FF</color>
+    <color name="label_violet">#AF38EB</color>
+    <color name="label_magenta">#E05194</color>
+    <color name="label_grey">#B8B8B8</color>
+
 </resources>

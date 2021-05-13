@@ -5,21 +5,110 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:background="@android:color/white"
-    android:elevation="4dp"
-    app:cardElevation="8dp">
+    android:elevation="32dp"
+    app:cardElevation="2dp">
 
-    <TextView
-        android:id="@+id/tvNameTask"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_margin="10dp"
-        android:gravity="center_vertical"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:text="test task\nok"
-        android:textSize="22sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="wrap_content">
 
+        <View
+            android:id="@+id/vColor"
+            android:layout_width="10dp"
+            android:layout_height="0dp"
+            android:background="@color/label_red"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/circleProgress"
+            app:layout_constraintStart_toEndOf="@id/vColor"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Title Title Title Title Title "
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="25dp"
+                    android:drawablePadding="10dp"
+                    android:drawableTint="@color/lightgrey"
+                    android:fontFamily="@font/roboto_regular"
+                    android:gravity="center"
+                    android:text="20/06"
+                    android:textColor="@color/lightgrey"
+                    android:textSize="14dp"
+                    app:drawableStartCompat="@drawable/ic_clock" />
+
+                <TextView
+                    android:id="@+id/tvAttachment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="20dp"
+                    android:drawablePadding="10dp"
+                    android:drawableTint="@color/lightgrey"
+                    android:fontFamily="@font/roboto_regular"
+                    android:gravity="center"
+                    android:text="8"
+                    android:textColor="@color/lightgrey"
+                    android:textSize="14dp"
+                    app:drawableStartCompat="@drawable/ic_attachment" />
+
+                <TextView
+                    android:id="@+id/tvActivity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:drawablePadding="10dp"
+                    android:drawableTint="@color/lightgrey"
+                    android:fontFamily="@font/roboto_regular"
+                    android:gravity="center"
+                    android:text="8"
+                    android:textColor="@color/lightgrey"
+                    android:textSize="14dp"
+                    app:drawableStartCompat="@drawable/ic_chat" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerMember"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <com.dinuscxj.progressbar.CircleProgressBar
+            android:id="@+id/circleProgress"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:progress_end_color="@color/label_skyBlue"
+            app:progress_start_color="@color/label_skyBlue"
+            app:progress_text_color="@color/label_skyBlue" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "629043600230",
-    "firebase_url": "https://teamworks-91376-default-rtdb.firebaseio.com",
-    "project_id": "teamworks-91376",
-    "storage_bucket": "teamworks-91376.appspot.com"
+    "project_number": "736416770755",
+    "firebase_url": "https://teamwork-7bfc3-default-rtdb.firebaseio.com",
+    "project_id": "teamwork-7bfc3",
+    "storage_bucket": "teamwork-7bfc3.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:629043600230:android:e8d42c20e80686fb0446a7",
+        "mobilesdk_app_id": "1:736416770755:android:7d9a5f42bd72a8c2551076",
         "android_client_info": {
           "package_name": "com.graduation.teamwork"
         }
       },
       "oauth_client": [
         {
-          "client_id": "629043600230-72v4hkg27b566d4eiv3lbomhts9aeed5.apps.googleusercontent.com",
+          "client_id": "736416770755-e62kqtkk8gng58k0ulo4nlb481ectvml.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA3mXglFFGvK_9yXqsnQIQeclnOXX4wO2w"
+          "current_key": "AIzaSyAkAlhy1uwSAqedl9Fou_Q0oElBnTjCgW4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "629043600230-72v4hkg27b566d4eiv3lbomhts9aeed5.apps.googleusercontent.com",
+              "client_id": "736416770755-e62kqtkk8gng58k0ulo4nlb481ectvml.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

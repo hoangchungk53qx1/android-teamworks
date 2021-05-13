@@ -8,8 +8,6 @@ import com.graduation.teamwork.extensions.toJson
 import com.graduation.teamwork.models.DtRoom
 import com.graduation.teamwork.models.DtUser
 import kotlinx.android.parcel.Parcelize
-import org.ocpsoft.prettytime.PrettyTime
-import java.util.*
 
 @Parcelize
 data class NotiDetailRoom(
@@ -69,7 +67,7 @@ data class NotiDetailRoom(
             content,
             timestamp.toDate().formatDateTime(),
             timestamp,
-            Constant.TYPE_NOTI.ROOM
+            Constant.NotifyType.ROOM
         )
     }
 }

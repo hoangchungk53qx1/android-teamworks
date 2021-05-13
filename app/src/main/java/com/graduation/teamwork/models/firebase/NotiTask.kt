@@ -5,7 +5,6 @@ import com.graduation.teamwork.data.local.Constant
 import com.graduation.teamwork.extensions.formatDateTime
 import com.graduation.teamwork.extensions.toDate
 import com.graduation.teamwork.extensions.toJson
-import com.graduation.teamwork.models.DtRoom
 import com.graduation.teamwork.models.DtUser
 import com.graduation.teamwork.models.data.TaskListItem
 import kotlinx.android.parcel.Parcelize
@@ -60,7 +59,7 @@ data class NotiDetailTask(
             content,
             timestamp.toDate().formatDateTime(),
             timestamp,
-            Constant.TYPE_NOTI.TASK
+            Constant.NotifyType.TASK
         )
     }
 }

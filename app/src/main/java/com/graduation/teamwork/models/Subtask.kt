@@ -18,7 +18,7 @@ data class Subtask (
 
 @Parcelize
 data class DtSubtask (
-    val isCompleted: Boolean? = null,
+    var isCompleted: Boolean = false,
     val createAt: Long? = null,
     val updateAt: Long? = null,
 

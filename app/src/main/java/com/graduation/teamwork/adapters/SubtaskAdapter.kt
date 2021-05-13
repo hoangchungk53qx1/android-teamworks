@@ -28,7 +28,7 @@ class SubtaskAdapter(
         private var currentList = mutableListOf<DtSubtask>()
     }
 
-    fun getItem(position: Int) = currentList[position]
+    private fun getItem(position: Int) = currentList[position]
 
     fun submitList(listItem: List<DtSubtask>) {
         currentList.clear()

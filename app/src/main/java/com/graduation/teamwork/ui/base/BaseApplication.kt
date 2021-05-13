@@ -7,8 +7,9 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Color
 import android.os.Build
-import android.util.Log
+import androidx.multidex.MultiDex
 import com.graduation.teamwork.data.local.Constant
+import com.graduation.teamwork.di.offlineApp
 import com.graduation.teamwork.di.onlineApp
 import com.pixplicity.easyprefs.library.Prefs
 import org.koin.android.ext.koin.androidContext
@@ -23,20 +24,16 @@ import org.koin.core.logger.Level
  */
 
 class BaseApplication : Application() {
-	
 	override fun onCreate() {
 		super.onCreate()
-
-		Log.d("__BASEAPP", "onCreate: OK")
-		
-//		MultiDex.install(this)
+		MultiDex.install(this)
 		
 		startKoin {
 			androidLogger(Level.DEBUG)
 			androidContext(this@BaseApplication)
-
 			// module
 			modules(onlineApp)
+
 		}
 
 		Prefs.Builder()
@@ -50,26 +47,29 @@ class BaseApplication : Application() {
 	}
 
 	private fun createNotificationChannel() {
-		Log.d("__BASEAPP", "onCreate: createNotificationChannel")
 		// Make a channel if necessary
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			// Create the NotificationChannel, but only on API 26+ because
 			// the NotificationChannel class is new and not in the support library
 			val importance = NotificationManager.IMPORTANCE_DEFAULT
 			val channel = NotificationChannel(
-				Constant.NOTIFY.CHANEL_ID,
-				Constant.NOTIFY.CHANEL_NAME,
+				Constant.NotifyKey.CHANEL_ID,
+				Constant.NotifyKey.CHANEL_NAME,
 				importance
-			)
-			channel.description = Constant.NOTIFY.CHANEL_DESCRIPTION
-			channel.enableLights(true)
-			channel.lightColor = Color.BLUE
-			channel.enableVibration(false)
+			).apply {
+				description = Constant.NotifyKey.CHANEL_DESCRIPTION
+				lightColor = Color.BLUE
+				enableLights(true)
+				enableVibration(false)
+			}
 
 			// Add the channel
-			val notificationManager =
-				getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-			notificationManager.createNotificationChannel(channel)
+//			val notificationManager =
+//					(getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+//			notificationManager.createNotificationChannel(channel)
+			(getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
+				createNotificationChannel(channel)
+			}
 		}
 	}
 

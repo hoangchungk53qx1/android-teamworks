@@ -7,5 +7,5 @@ data class InfoNoti(
     val content: String,
     val timestamp: String,
     val timestampL: Long,
-    val category: Constant.TYPE_NOTI
+    val category: Constant.NotifyType
 )

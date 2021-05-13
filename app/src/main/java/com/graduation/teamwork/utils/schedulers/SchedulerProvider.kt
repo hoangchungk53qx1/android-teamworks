@@ -1,14 +1,14 @@
 package com.graduation.teamwork.utils.schedulers
 
-import com.graduation.teamwork.utils.schedulers.BaseSchedulerProvider
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 
-class SchedulerProvider : BaseSchedulerProvider {
-    override fun io() = Schedulers.io()
+class SchedulerProvider {
+    fun io(): Scheduler = Schedulers.io()
 
-    override fun ui() = AndroidSchedulers.mainThread()
+    fun ui() = AndroidSchedulers.mainThread()!!
 
-    override fun computation() = Schedulers.computation()
+    fun computation(): Scheduler = Schedulers.computation()
 }

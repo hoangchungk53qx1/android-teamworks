@@ -9,6 +9,6 @@ class LoginRepositoryImpl(private val apiServer: ApiServer) : LoginRepository {
     override fun loginWithMail(mail: String, password: String): Single<User> =
         apiServer.loginWithMail(mail, password);
 
-    override fun addUser(fullname: String, password: String, mail: String): Single<User> =
-        apiServer.addUser(fullname, password, mail)
+    override fun addUser(fullName: String, password: String, mail: String): Single<User> =
+        apiServer.addUser(fullName, password, mail)
 }

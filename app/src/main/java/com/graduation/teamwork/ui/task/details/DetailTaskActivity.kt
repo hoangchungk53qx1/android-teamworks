@@ -1,33 +1,39 @@
 package com.graduation.teamwork.ui.task.details
 
+import android.Manifest
 import android.content.DialogInterface
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
-import androidx.core.content.ContextCompat
-import androidx.core.widget.doOnTextChanged
+import androidx.core.app.ActivityCompat
+import androidx.core.view.isVisible
+import androidx.lifecycle.observe
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.work.Data
+import com.crazylegend.imagepicker.pickers.SingleImagePicker
 import com.graduation.teamwork.R
-import com.graduation.teamwork.adapters.SubtaskAdapter
 import com.graduation.teamwork.data.local.Constant
 import com.graduation.teamwork.databinding.ActDetailTaskBinding
 import com.graduation.teamwork.extensions.*
-import com.graduation.teamwork.models.DtSubtask
 import com.graduation.teamwork.models.DtUser
+import com.graduation.teamwork.models.TypeAttachment
 import com.graduation.teamwork.models.data.TaskListItem
 import com.graduation.teamwork.ui.base.BaseActivity
+import com.graduation.teamwork.ui.task.details.adapter.DetailAttachmentAdapter
+import com.graduation.teamwork.ui.task.details.adapter.DetailLabelAdapter
+import com.graduation.teamwork.ui.task.details.adapter.DetailMemberAdapter
+import com.graduation.teamwork.ui.task.details.adapter.DetailTaskListAdapter
+import com.graduation.teamwork.utils.DialogManager
 import com.graduation.teamwork.utils.PrefsManager
 import com.graduation.teamwork.utils.eventbus.RxBus
 import com.graduation.teamwork.utils.eventbus.RxEvent
 import com.graduation.teamwork.utils.notify.NotifyHelper
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
-import kotlinx.android.synthetic.main.act_detail_task.*
+import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.act_detail_task.view.*
-import kotlinx.android.synthetic.main.act_task.view.*
-import kotlinx.android.synthetic.main.act_task.view.tvTitle
 import org.koin.android.ext.android.inject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,149 +48,310 @@ class DetailTaskActivity : BaseActivity<ActDetailTaskBinding>(), TimePickerDialo
      * INJECT
      */
     private val viewModel: DetailViewModel by inject()
+    private val dialogs: DialogManager by inject()
     private val prefs: PrefsManager by inject()
 
-    private var currentUser: DtUser? = prefs.getUser()
+    private lateinit var datePickerDialog: DatePickerDialog
+    private lateinit var timePickerDialog: TimePickerDialog
     private lateinit var task: TaskListItem.DtTask
     private lateinit var users: List<DtUser>
 
-    private var mAdapter = SubtaskAdapter(mutableListOf())
-
-    private var timeHour = ""
-    private var timeDay = ""
-    private lateinit var datePickerDialog: DatePickerDialog
-    private lateinit var timePickerDialog: TimePickerDialog
+    private val TAG = "__DetailTaskActivity"
 
     private val mNotifyHelper: NotifyHelper = NotifyHelper.getInstance(this)!!
+    private var adapterLabel = DetailLabelAdapter(Constant.LabelColor.allColors(), mutableListOf())
+    private var adapterTask = DetailTaskListAdapter(mutableListOf()) { item ->
+        viewModel.setCompletedSubTask(item._id!!, item.name ?: "", item.isCompleted)
+        RxBus.publishToPublishSubject(RxEvent.RoomUpdate(""))
+        prefs.setChange(true)
+    }
+    private var adapterLink = DetailAttachmentAdapter(mutableListOf()) {}
+    private var adapterImage = DetailAttachmentAdapter(mutableListOf()) {}
+    private var adapterMember = DetailMemberAdapter(mutableListOf(), mutableListOf()) { item, _ ->
+        if (item.isSelected) {
+            viewModel.addUserInTask(task._id!!, item._id!!, currentUser?._id!!)
+        } else {
+            viewModel.deleteUserInTask(task._id!!, item._id!!, currentUser?._id!!)
+        }
+        RxBus.publishToPublishSubject(RxEvent.RoomUpdate(""))
+        prefs.setChange(true)
+    }
+
+    private var currentUser: DtUser? = prefs.getUser()
+    private var currentSheetOpen = Constant.SheetType.NONE
+    private var timeHour = ""
+    private var timeDay = ""
 
     override fun onViewReady(savedInstanceState: Bundle?) {
-
         receiverData()
         setupViews()
         setupListeners()
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        updateViews()
+    private fun receiverData() {
+        if (intent.getStringExtra(Constant.IntentKey.DETAIL_TASK.value) != null &&
+            intent.getStringExtra(Constant.IntentKey.DETAIL_USER.value) != null
+        ) {
+            task = intent.getStringExtra(Constant.IntentKey.DETAIL_TASK.value)!!
+                .toObject<TaskListItem.DtTask>()!!
+            users = intent.getStringExtra(Constant.IntentKey.DETAIL_USER.value)!!.toListObject()!!
+        }
     }
 
-    private fun receiverData() {
-        if (intent.getStringExtra(Constant.INTENT.DETAIL_TASK.value) != null &&
-            intent.getStringExtra(Constant.INTENT.DETAIL_USER.value) != null
-        ) {
-            task = intent.getStringExtra(Constant.INTENT.DETAIL_TASK.value)!!
-                .fromObject<TaskListItem.DtTask>()!!
-            users = intent.getStringExtra(Constant.INTENT.DETAIL_USER.value)!!.fromJson()!!
-        }
+    private fun setupToolbar() {
+        binding?.run {
+            showBackButton(isShow = true)
+            setSupportActionBar(toolbar)
+//            toolbar.title = task.name
 
+        }
+    }
+
+    private fun setupDefaultValue() {
+        binding?.run {
+            toolbar.tvTitle.text = task.name
+            edtDescription.setText(task.description)
+
+            if (task.deadline == 0L) {
+                detailInfo.tvDeadline.text = "Ngày hết hạn"
+            } else {
+                detailInfo.tvDeadline.text = task.deadline.toDate().formatDateTime()
+            }
+
+            if (::users.isInitialized) {
+
+                adapterMember.submitList(users)
+                adapterMember.submitSelected(users.intersectUser(task.users!!))
+            }
+            if (::task.isInitialized) {
+                task.let {
+                    it.subtasks?.let { adapterTask.submitList(it) }
+                    it.attachments?.let {
+                        adapterLink.submitList(it.filter { it.type == TypeAttachment.LINK.value })
+                        adapterImage.submitList(it.filter { it.type == TypeAttachment.IMAGE.value })
+                    }
+
+                    adapterLabel.submitSelected(task.labels ?: mutableListOf())
+                }
+
+                /* check show recyclerview */
+                with(detailAttachment) {
+                    recyclerLink.setVisiable(
+                        !task.attachments.isNullOrEmpty() &&
+                                !task.attachments?.filter { it.type == TypeAttachment.LINK.value }
+                                    .isNullOrEmpty()
+                    )
+                    tvAttachmentLinkEmpty.setVisiable(
+                        task.attachments.isNullOrEmpty() ||
+                                task.attachments?.filter { it.type == TypeAttachment.LINK.value }
+                                    .isNullOrEmpty()
+                    )
+
+                    recyclerImage.setVisiable(
+                        !task.attachments.isNullOrEmpty() &&
+                                !task.attachments?.filter { it.type == TypeAttachment.IMAGE.value }
+                                    .isNullOrEmpty()
+                    )
+                    tvAttachmentImageEmpty.setVisiable(
+                        task.attachments.isNullOrEmpty() &&
+                                task.attachments?.filter { it.type == TypeAttachment.IMAGE.value }
+                                    .isNullOrEmpty()
+                    )
+                }
+
+                with(detailTask) {
+                    recyclerTask.setVisiable(!task.subtasks.isNullOrEmpty())
+                    tvTaskEmpty.setVisiable(task.subtasks.isNullOrEmpty())
+                }
+            }
+        }
     }
 
     private fun setupViews() {
-        window.statusBarColor = ContextCompat.getColor(this, R.color.colorPrimaryDarkTask)
         binding?.run {
-            setSupportActionBar(toolbar)
-            showBackButton(true)
-            toolbar.rlToolbarDetailTask.tvTitle.text = task.name
+            setupToolbar()
+            setupDefaultValue()
 
-            with(recyclerTaskList) {
+            /* setup recyclerview */
+            with(detailTask.recyclerTask) {
                 layoutManager = LinearLayoutManager(this@DetailTaskActivity)
                 setHasFixedSize(true)
-
-                adapter = mAdapter
+                adapter = adapterTask
             }
 
-            if (::task.isInitialized && task.deadline != null) {
-                Log.d(TAG, "updateViews: TIME1 = ${task.name} - ${task.deadline!!.toDate().formatDateTime()} - ${task.deadline}")
-                tvDeadline.text = task.deadline!!.toDate().formatDateTime()
+            with(detailAttachment) {
+                recyclerImage.run {
+                    layoutManager = GridLayoutManager(this@DetailTaskActivity, 3)
+                    setHasFixedSize(true)
+                    adapter = adapterImage
+                }
+
+                recyclerLink.run {
+                    layoutManager = LinearLayoutManager(this@DetailTaskActivity)
+                    setHasFixedSize(true)
+                    adapter = adapterLink
+                }
             }
-        }
 
-        if (::task.isInitialized) {
-            task.subtasks?.let { mAdapter.submitList(it) }
-        }
-    }
-
-    private fun updateViews() {
-        binding?.run{
-            if (::task.isInitialized && task.deadline != null) {
-                Log.d(TAG, "updateViews: TIME2 = ${task.name} - ${task.deadline!!.toDate().formatDateTime()} - ${task.deadline}")
-                tvDeadline.text = task.deadline!!.toDate().formatDateTime()
+            with(bottomSheetLayout.recyclerSheet) {
+                layoutManager = LinearLayoutManager(this@DetailTaskActivity)
+                setHasFixedSize(true)
+                adapter = adapterMember
             }
         }
     }
 
     private fun setupListeners() {
         binding?.run {
-            edtAddSubTask.doOnTextChanged { text, start, before, count ->
-                imgAddSubtaskAccept.setVisiable(!text.isNullOrBlank())
-                imgAddSubtaskClose.setVisiable(!text.isNullOrBlank())
+
+            with(detailInfo) {
+                lnDeadline.setOnClickListener {
+                    if (bottomSheetLayout.bottomSheet.isVisible) {
+                        setShowButtomSheet(isShow = false)
+                    } else {
+                        showDatetimePicker()
+                    }
+                }
+
+                lnLabel.setOnClickListener {
+                    bottomSheetLayout.run {
+                        tvTitle.text = "Nhãn thẻ"
+                        recyclerSheet.adapter = adapterLabel
+                        btnAdd.gone()
+                    }
+                    currentSheetOpen = Constant.SheetType.LABEL
+                    toggleButtomSheet()
+                }
+
+                lnMember.setOnClickListener {
+                    bottomSheetLayout.run {
+                        tvTitle.text = "Thành viên của thẻ"
+                        recyclerSheet.adapter = adapterMember
+                        btnAdd.gone()
+                    }
+                    currentSheetOpen = Constant.SheetType.MEMBER
+
+                    toggleButtomSheet()
+                }
+
+                detailTask.btnAdd.setOnClickListener {
+                    dialogs.inputDialog(
+                        context = this@DetailTaskActivity,
+                        title = "Thêm nhiệm vụ",
+                        handlerOk = {
+                            viewModel.addSubTask(task._id!!, it, currentUser?._id!!)
+                            showProgress("Thêm nhiệm vụ")
+                        })
+                }
+
+                detailAttachment.btnAdd.setOnClickListener {
+                    dialogs.singleChoice(
+                        this@DetailTaskActivity,
+                        "Lựa chọn",
+                        listOf("Camera", "Photos", "Link")
+                    ) {
+                        Log.d(TAG, "setupListeners: selected $it")
+
+                        when (it) {
+                            "Photos" -> {
+                                if (ActivityCompat.checkSelfPermission(
+                                        this@DetailTaskActivity,
+                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    SingleImagePicker.showPicker(this@DetailTaskActivity) {
+                                        viewModel.uploadImage(
+                                            this@DetailTaskActivity,
+                                            it.contentUri,
+                                            task._id!!,
+                                            currentUser?._id!!
+                                        )
+                                        showProgress("Thêm ảnh")
+                                    }
+                                }
+                            }
+                            "Camera" -> {
+
+                            }
+                            else -> {
+                                dialogs.inputDialog(
+                                    this@DetailTaskActivity,
+                                    "Thêm link",
+                                    "https://www.youtube.com/",
+                                    {
+                                        if (!it.isBlank()) {
+                                            viewModel.uploadLink(task._id!!, it, currentUser?._id!!)
+
+                                            showProgress("Thêm link")
+                                        }
+                                    })
+                            }
+                        }
+                    }
+                }
+
+                bottomSheetLayout.run {
+                    btnClose.setOnClickListener {
+                        if (bottomSheetLayout.bottomSheet.isVisible) {
+                            setShowButtomSheet(isShow = false)
+                        }
+
+                        if (adapterLabel.hasSelectedColor() && currentSheetOpen == Constant.SheetType.LABEL) {
+                            viewModel.setLabels(
+                                task._id!!,
+                                adapterLabel.getSelectedColor()
+                            )
+                            adapterLabel.resetSelected()
+                            showProgress("Thêm nhãn")
+                        } else if (adapterMember.hasSelectedMember() && currentSheetOpen == Constant.SheetType.MEMBER) {
+                            viewModel.queryMemberInTask(task._id!!)
+                            adapterMember.resetSelected()
+                            showProgress("Thêm thành viên")
+                        }
+                    }
+
+                    btnAdd.setOnClickListener {
+                        dialogs.inputDialog(
+                            context = this@DetailTaskActivity,
+                            title = "Thêm nhiệm vụ",
+                            handlerOk = {
+                                viewModel.addSubTask(task._id!!, it, currentUser?._id!!)
+                                showProgress("Thêm nhiệm vụ")
+                            })
+                    }
+                }
             }
 
-            imgAddSubtaskClose.setOnClickListener {
-                edtAddSubTask.text.clear()
-            }
+            with(viewModel) {
+                resources.observe(this@DetailTaskActivity) {
+                    if (it.data != null) {
+                        this@DetailTaskActivity.task = it.data
+                        setupDefaultValue()
+                        RxBus.publishToPublishSubject(RxEvent.RoomUpdate(""))
+                        prefs.setChange(true)
+                    }
+                    hideProgress()
+                }
 
-            imgAddSubtaskAccept.setOnClickListener {
-
-                viewModel.addSubtask(task._id!!, edtAddSubTask.text.toString(), currentUser!!._id!!)
-//                showProgress(getString(R.string.loading_message))
-
-                val newList = this@DetailTaskActivity.task.subtasks?.toMutableList()!!
-                newList.add(
-                    DtSubtask(
-                        _id = "dsads", name = edtAddSubTask.text.toString(), idTask = "sdasdas"
-                    )
-                )
-                mAdapter.submitList(newList)
-
-                RxBus.publishToPublishSubject(RxEvent.UpdateRoom)
-                edtAddSubTask.text.clear()
-            }
-
-            lnDeadline.setOnClickListener {
-                showDatetimePicker()
+                resourcesUpdate.observe(this@DetailTaskActivity) {
+                    if (it.data != null) {
+                        this@DetailTaskActivity.task = it.data.first()
+                        setupDefaultValue()
+                        RxBus.publishToPublishSubject(RxEvent.RoomUpdate(""))
+                        prefs.setChange(true)
+                    }
+                    hideProgress()
+                }
             }
         }
-
-        viewModel.resources.observe(this, {
-//            hideProgres()
-            if (it.data != null) {
-                this.task = it.data
-
-                task.subtasks?.let { mAdapter.submitList(it) }
-            }
-        })
-
-        viewModel.resourcesUpdate.observe(this, {
-            if (it.data != null) {
-                RxBus.publishToPublishSubject(RxEvent.UpdateTask)
-            }
-        })
     }
 
-    fun showDatetimePicker() {
+    private fun showDatetimePicker() {
         val now = Calendar.getInstance()
-        if (task.deadline != null) {
-            Log.d(TAG, "updateViews: TIME3 = ${task.name} - ${task.deadline!!.toDate().formatDateTime()} - ${task.deadline}")
-            now.timeInMillis = task.deadline!!
+        if (task.deadline != 0L) {
+            now.timeInMillis = task.deadline
         }
-        /*
-            It is recommended to always create a new instance whenever you need to show a Dialog.
-            The sample app is reusing them because it is useful when looking for regressions
-            during testing
-             */
-        /*
-            It is recommended to always create a new instance whenever you need to show a Dialog.
-            The sample app is reusing them because it is useful when looking for regressions
-            during testing
-             */
-        /*
-            It is recommended to always create a new instance whenever you need to show a Dialog.
-            The sample app is reusing them because it is useful when looking for regressions
-            during testing
-             */
+
         if (!::datePickerDialog.isInitialized) {
             datePickerDialog = DatePickerDialog.newInstance(
                 this,
@@ -207,65 +374,82 @@ class DetailTaskActivity : BaseActivity<ActDetailTaskBinding>(), TimePickerDialo
         datePickerDialog.show(supportFragmentManager, "Datepickerdialog")
     }
 
+    private fun setShowButtomSheet(isShow: Boolean = false) {
+        binding?.run {
+            if (isShow) {
+                bottomSheetLayout.bottomSheet.slideUp()
+            } else {
+                bottomSheetLayout.bottomSheet.slideDown()
+            }
+        }
+    }
 
-    private val TAG = "__DetailTaskActivity"
+    private fun toggleButtomSheet() {
+        binding?.run {
+            if (bottomSheetLayout.bottomSheet.isVisible) {
+                bottomSheetLayout.bottomSheet.slideDown()
+                currentSheetOpen = Constant.SheetType.NONE
+            } else {
+                bottomSheetLayout.bottomSheet.slideUp()
+            }
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
                 onBackPressed()
-
                 true
             }
-//            R.id.moreHor -> {
-//                binding?.drawerTask?.openDrawer(GravityCompat.END)
-//                true
-//            }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onBackPressed() {
+        if (binding?.bottomSheetLayout?.bottomSheet?.isVisible == true) {
+            setShowButtomSheet(isShow = false)
+        } else {
+            super.onBackPressed()
         }
     }
 
     override fun onTimeSet(view: TimePickerDialog?, hourOfDay: Int, minute: Int, second: Int) {
         timeHour = "$hourOfDay:$minute"
-
-        val fulltime = "$timeDay $timeHour"
-
         val date =
-            SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).parse("$fulltime")
-
-        Log.d(TAG, "onTimeSet: ${task._id!!}")
+            SimpleDateFormat(
+                "dd/MM/yyyy HH:mm",
+                Locale.getDefault()
+            ).parse("$timeDay $timeHour")
 
         if (date!!.time > now()) {
-            viewModel.changeDeadline(task._id!!, date.time, currentUser!!._id!!)
-            binding?.tvDeadline?.text = "$timeDay $timeHour"
-
-//            val data = Data.Builder().putInt(NOTIFICATION_ID, 0).build()
             val delay = date.time - now()
-
             setScheduler(delay)
-            showToast("Lên lịch thành công")
-        }else {
-            showToast("Vui lòng chọn thời gian lớn hơn hiện tại")
+
+            viewModel.changeDeadline(task._id!!, date.time, currentUser!!._id!!)
+            Toasty.success(this, "Lên lịch thành công").show()
+        } else {
+            Toasty.error(this, "Vui lòng chọn thời gian lớn hơn hiện tại").show()
         }
     }
 
-    fun setScheduler(timeDelay: Long) {
+    private fun setScheduler(timeDelay: Long) {
         mNotifyHelper.schedule(timeDelay)
-
     }
 
-    override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
+    override fun onDateSet(
+        view: DatePickerDialog?,
+        year: Int,
+        monthOfYear: Int,
+        dayOfMonth: Int
+    ) {
         timeDay = "$dayOfMonth/${monthOfYear + 1}/$year"
 
         val now = Calendar.getInstance()
         if (task.deadline != null) {
-            Log.d(TAG, "updateViews: TIME4 = ${task.name} - ${task.deadline!!.toDate().formatDateTime()}")
             now.timeInMillis = task.deadline!!
         }
-        /*
-            It is recommended to always create a new instance whenever you need to show a Dialog.
-            The sample app is reusing them because it is useful when looking for regressions
-            during testing
-             */if (!::timePickerDialog.isInitialized) {
+
+        if (!::timePickerDialog.isInitialized) {
             timePickerDialog = TimePickerDialog.newInstance(
                 this,
                 now[Calendar.HOUR_OF_DAY],
@@ -286,6 +470,10 @@ class DetailTaskActivity : BaseActivity<ActDetailTaskBinding>(), TimePickerDialo
             Log.d("TimePicker", "Dialog was cancelled")
         }
         timePickerDialog.show(supportFragmentManager, "Timepickerdialog")
-        Log.d(TAG, "onDateSet: $timeDay")
+    }
+
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.nothing, R.anim.from_right_out)
     }
 }

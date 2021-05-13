@@ -5,13 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.graduation.teamwork.R
 import com.graduation.teamwork.data.local.Constant
 import com.graduation.teamwork.ui.login.LoginActivity
-import com.graduation.teamwork.ui.main.MainActivity
 import java.util.*
 
 /**
@@ -52,7 +50,7 @@ object NotifyUtils {
 
         // Create the notification
         val builder: NotificationCompat.Builder =
-            NotificationCompat.Builder(context, Constant.NOTIFY.CHANEL_ID)
+            NotificationCompat.Builder(context, Constant.NotifyKey.CHANEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Thông báo")
                 .setContentText("Có công việc gần đến hạn!!!")
@@ -67,6 +65,6 @@ object NotifyUtils {
 
         // Show the notification
         val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
-        notificationManager.notify(Constant.NOTIFY.NOTIFICATION_ID, builder.build())
+        notificationManager.notify(Constant.NotifyKey.NOTIFICATION_ID, builder.build())
     }
 }

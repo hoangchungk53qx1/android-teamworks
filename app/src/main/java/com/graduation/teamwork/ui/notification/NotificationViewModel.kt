@@ -2,9 +2,9 @@ package com.graduation.teamwork.ui.notification
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.graduation.teamwork.ui.base.BaseViewModel
 import com.graduation.teamwork.ui.base.ViewModelEvent
 import com.graduation.teamwork.ui.base.ViewModelState
-import com.graduation.teamwork.ui.base.BaseViewModel
 import com.graduation.teamwork.utils.mvvm.SingleLiveEvent
 
 /**

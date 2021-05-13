@@ -4,6 +4,8 @@ import com.graduation.teamwork.models.*
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.http.*
 
 /**
@@ -51,7 +53,10 @@ interface ApiServer {
 
     @Multipart
     @POST("/user/update/avatar/{id}")
-    fun updateAvatar(@Path(value = "id") id: String, @Part part: MultipartBody.Part): Single<User>
+    fun updateAvatar(
+        @Path(value = "id") id: String,
+        @Part part: MultipartBody.Part
+    ): Single<User>
 
     /**
      * AUTHEN
@@ -181,12 +186,30 @@ interface ApiServer {
         @Field("name") name: String
     ): Single<Stage>
 
+    @FormUrlEncoded
+    @POST("stage/update/movetask")
+    fun onMoveTask(
+        @Field("idStageFrom") idStageFrom: String,
+        @Field("idStageTo") idStageTo: String,
+        @Field("idTask") idTask: String
+    ): Single<ResponseBody>
+
+    @POST("stage/delete/task")
+    fun onDeleteTask(
+        @Field("id") idStage: String,
+        @Field("idTask") idTask: String
+    ): Single<Stage>
+
+
     /**
      * TASK
      */
-
     @GET("task")
     fun queryAllTask(): Single<Task>
+
+    @FormUrlEncoded
+    @GET("task/query/{id}")
+    fun queryTaskWithId(@Path("id") id: String): Single<Task>
 
     @FormUrlEncoded
     @POST("task/add/subtask")
@@ -199,9 +222,9 @@ interface ApiServer {
     @Multipart
     @POST("/task/{id}/add-attachment")
     fun uploadImageTask(
-        @Path("id") id: String,
+        @Path(value = "id") id: String,
         @Part part: MultipartBody.Part,
-        @Field("idUser") idUser: String
+        @Part(value = "idUser") idUser: String
     ): Single<Task>
 
     @FormUrlEncoded
@@ -217,14 +240,15 @@ interface ApiServer {
     @POST("task/delete/user")
     fun deleteUserInTask(
         @Field("id") idTask: String,
-        @Field("idCategory") idCategory: String,
+        @Field("idCategory") idUser: String,
         @Field("idUserAction") idUserAction: String
     ): Single<Task>
 
     @FormUrlEncoded
     @POST("task/{id}/add-attachment-link")
     fun addLinkTask(
-        @Path("id") idTask: String, @Field("link") link: String,
+        @Path("id") idTask: String,
+        @Field("link") link: String,
         @Field("idUser") idUser: String
     ): Single<Task>
 
@@ -240,12 +264,26 @@ interface ApiServer {
         @Field("idUserAction") idUser: String
     ): Single<Task>
 
+    @FormUrlEncoded
+    @POST("task/update/labels/{id}")
+    fun updateLabel(
+        @Path("id") id: String,
+        @Field("labels") labels: List<Int>
+    ): Single<Task>
+
     /**
      * SUBTASK
      */
-
     @GET("subtask")
     fun queryAllSubtask(): Single<Subtask>
+
+    @FormUrlEncoded
+    @POST("subtask/update/{id}")
+    fun setCompleted(
+        @Path("id") id: String,
+        @Field("name") name: String,
+        @Field("completed") isCompleted: Boolean = false
+    ): Single<Subtask>
 
     /**
      * HISTORY

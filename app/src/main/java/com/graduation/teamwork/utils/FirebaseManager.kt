@@ -8,7 +8,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import com.graduation.teamwork.extensions.fromObject
+import com.graduation.teamwork.extensions.toObject
 import com.graduation.teamwork.models.DtRoom
 import com.graduation.teamwork.models.firebase.NotiDetailRoom
 import com.graduation.teamwork.models.firebase.NotiDetailTask
@@ -108,15 +108,6 @@ class FirebaseManager(
     }
 
     fun readAll(currentIdUser: String, rooms: List<DtRoom>?) {
-        Log.d(TAG, "readAll: ${rooms?.size} - $currentIdUser")
-//
-//        rooms?.map { it.users }
-//            ?.forEach {
-//                it?.forEach { user ->
-//                    Log.d(TAG, "readAll: name = ${user.user?.fullname} - id = ${user.user?._id}")
-//                }
-//            }
-//
         val data = hashMapOf<String, List<String>>()
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -134,6 +125,7 @@ class FirebaseManager(
                     dataMap.keys.forEach { item ->
                         val dataItem = dataMap[item] as HashMap<*, *>
                         val dataString = JSONObject(dataItem).toString()
+
                         val key = category
                         var values = data[key]?.toMutableList()
 
@@ -144,7 +136,7 @@ class FirebaseManager(
                         when (category) {
                             "rooms" -> {
                                 val idRoom =
-                                    dataString.fromObject<NotiDetailRoom>()?.idCategory
+                                    dataString.toObject<NotiDetailRoom>()?.idCategory
 
                                 val shouldAdd = !rooms?.filter { room -> room._id == idRoom }
                                     ?.map { it.users }
@@ -160,7 +152,7 @@ class FirebaseManager(
                             }
                             "tasks" -> {
                                 val idTask =
-                                    dataString.fromObject<NotiDetailTask>()?.idCategory
+                                    dataString.toObject<NotiDetailTask>()?.idCategory
 
                                 val shouldAdd = !rooms?.map {
                                     it.stages
@@ -178,7 +170,7 @@ class FirebaseManager(
                             }
                             else -> {
                                 val idUser =
-                                    dataString.fromObject<NotiDetailUser>()?.idUserPerformer
+                                    dataString.toObject<NotiDetailUser>()?.idUserPerformer
 
                                 if (idUser == currentIdUser) {
                                     values.add(dataString)

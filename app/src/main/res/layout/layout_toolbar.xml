@@ -4,97 +4,37 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@color/colorPrimary">
+    android:background="@color/colorPrimary"
+    app:navigationIcon="@drawable/ic_menu"
+    app:titleTextColor="@color/mdtp_white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cslToolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/btnDrawer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:contentDescription="Drawer"
-            android:onClick="openDrawer"
-            android:src="@drawable/hambuger"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <RelativeLayout
+        <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_corner_toolbar"
-            app:layout_constraintBottom_toBottomOf="@id/btnDrawer"
-            app:layout_constraintLeft_toRightOf="@id/btnDrawer"
-            app:layout_constraintRight_toLeftOf="@id/rlvSettings"
-            app:layout_constraintTop_toTopOf="@id/btnDrawer">
+            android:layout_height="match_parent"
+            android:fontFamily="@font/roboto_regular"
+            android:gravity="center_vertical"
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/btnSearch"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <EditText
-                android:id="@+id/edtSearch"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/btnSearch"
-                android:autofillHints="Search..."
-                android:background="@null"
-                android:hint="@string/search"
-                android:inputType="text"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:textColor="@android:color/white"
-                android:textColorHint="#80FFFFFF" />
-
-            <ImageButton
-                android:id="@+id/btnSearch"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="6dp"
-                android:background="@null"
-                android:onClick="actionSearch"
-                android:padding="2dp"
-                android:src="@drawable/ic_search_white" />
-
-        </RelativeLayout>
-
-
-        <RelativeLayout
-            android:id="@+id/rlvSettings"
+        <ImageButton
+            android:id="@+id/btnSearch"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_marginEnd="8dp"
-            android:onClick="openSettings"
-            app:layout_constraintBottom_toBottomOf="@id/btnDrawer"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/btnDrawer">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="Settings"
-                android:src="@drawable/bg_toolbar" />
-
-            <ImageButton
-                android:onClick="openSettings"
-                android:id="@+id/btnSetting"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_centerInParent="true"
-                android:background="@null"
-                android:contentDescription="Settings"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_settings"
-                android:tint="@android:color/white" />
-        </RelativeLayout>
-
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:padding="20dp"
+            android:src="@drawable/ic_search_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

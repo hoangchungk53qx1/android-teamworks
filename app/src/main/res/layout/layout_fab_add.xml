@@ -1,58 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cslFab"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rlFab"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddRoom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:src="@drawable/ic_room"
-        android:tint="@android:color/white"
-        app:backgroundTint="@color/accentGreen"
-        app:fabSize="mini"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:rippleColor="@android:color/white" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:src="@drawable/ic_group"
-        android:tint="@android:color/white"
-        app:backgroundTint="@color/accentGreen"
-        app:fabSize="mini"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fabAddRoom"
-        app:rippleColor="@android:color/white" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/fabAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="15dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="10dp"
-        android:contentDescription="Add"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:src="@drawable/ic_add"
-        android:tint="@android:color/white"
-        app:backgroundTint="@color/accentGreen"
-        app:fabSize="normal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fabAddGroup"
-        app:rippleColor="@android:color/white" />
+        android:layout_marginBottom="8dp"
+        fab:fab_addButtonColorNormal="@color/mdtp_white"
+        fab:fab_addButtonColorPressed="@color/mdtp_white"
+        fab:fab_addButtonPlusIconColor="@color/blackColor"
+        fab:fab_addButtonSize="normal"
+        fab:fab_expandDirection="up"
+        fab:fab_labelStyle="@style/menu_labels_style"
+        fab:fab_labelsPosition="left">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddRoom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_room"
+            fab:fab_colorNormal="@color/mdtp_white"
+            fab:fab_colorPressed="@color/bg_gray"
+            fab:fab_title="Thêm phòng" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_group"
+            fab:fab_colorNormal="@color/mdtp_white"
+            fab:fab_colorPressed="@color/bg_gray"
+            fab:fab_title="Thêm nhóm" />
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+</RelativeLayout>

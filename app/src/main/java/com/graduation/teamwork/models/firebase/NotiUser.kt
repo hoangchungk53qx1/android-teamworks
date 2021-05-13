@@ -19,7 +19,7 @@ data class NotiDetailUser(
             "Bạn $content",
             timestamp.toDate().formatDateTime(),
             timestamp,
-            Constant.TYPE_NOTI.USER
+            Constant.NotifyType.USER
         )
     }
 }

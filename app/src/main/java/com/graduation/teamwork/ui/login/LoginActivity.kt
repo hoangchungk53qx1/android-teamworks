@@ -2,9 +2,9 @@ package com.graduation.teamwork.ui.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 import com.graduation.teamwork.R
 import com.graduation.teamwork.databinding.ActLoginBinding
@@ -14,7 +14,6 @@ import com.graduation.teamwork.ui.base.BaseActivity
 import com.graduation.teamwork.ui.main.MainActivity
 import com.graduation.teamwork.utils.PrefsManager
 import com.graduation.teamwork.extensions.showSnackbar
-import com.graduation.teamwork.extensions.showToast
 import kotlinx.android.synthetic.main.act_login.*
 import kotlinx.android.synthetic.main.act_login.view.*
 import org.koin.android.ext.android.inject
@@ -54,7 +53,7 @@ class LoginActivity : BaseActivity<ActLoginBinding>() {
                 userDefault.password!!
             )
 
-            showProgress(getString(R.string.loading_message_login))
+            showProgress("Đăng nhập")
 
             turnOffClicked(isEnable = false)
         }
@@ -106,7 +105,7 @@ class LoginActivity : BaseActivity<ActLoginBinding>() {
                     binding?.edtMail?.text.toString(),
                     binding?.edtPassword?.text.toString()
                 )
-                showProgress("Login...")
+                showProgress()
                 turnOffClicked(isEnable = false)
             } else {
                 val username = binding?.edtUsername?.text.toString()
@@ -121,7 +120,7 @@ class LoginActivity : BaseActivity<ActLoginBinding>() {
                 viewModel.addUser(
                     username, password, email
                 )
-                showProgress("Register...")
+                showProgress()
                 turnOffClicked(isEnable = false)
             }
         }
@@ -133,8 +132,7 @@ class LoginActivity : BaseActivity<ActLoginBinding>() {
         }
 
         // view model
-        viewModel.resources.observe(this, {
-            hideProgres()
+        viewModel.resources.observe(this) {
             turnOffClicked(isEnable = true)
             if (it.data?.firstOrNull() != null) {
                 // save data
@@ -144,6 +142,8 @@ class LoginActivity : BaseActivity<ActLoginBinding>() {
                 Intent(this, MainActivity::class.java).also { it ->
                     it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(it)
+                    overridePendingTransition(R.anim.from_right_in, R.anim.nothing)
+                    finish()
                 }
 
             } else {
@@ -155,6 +155,7 @@ class LoginActivity : BaseActivity<ActLoginBinding>() {
                     )
                 }
             }
-        })
+            hideProgress()
+        }
     }
 }

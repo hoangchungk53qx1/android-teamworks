@@ -7,24 +7,22 @@ import kotlinx.android.parcel.Parcelize
 
 
 sealed class TaskListItem {
-
     @Parcelize
     data class DtTask(
-        val label: Long? = null,
+        val labels: List<Int>? = null,
         val description: String? = null,
         val isCompleted: Boolean? = null,
         val createAt: Long? = null,
         val updateAt: Long? = null,
-        val deadline: Long? = null,
+        val deadline: Long = 0,
 
         @Json(name = "_id")
         val _id: String? = null,
 
         val subtasks: List<DtSubtask>? = null,
-//    val histories: List<History?>? = null,
         val attachments: List<Attachment>? = null,
         val comments: List<Comment>? = null,
-        val users: List<User>? = null,
+        val users: List<DtUser>? = null,
         val name: String? = null,
         val idStage: String? = null,
 
@@ -34,7 +32,6 @@ sealed class TaskListItem {
 
     @Parcelize
     data class Header(
-
         val isHighlight: Boolean? = null,
         val modify: Long? = null,
         val isEnableComment: Boolean? = null,
@@ -49,7 +46,6 @@ sealed class TaskListItem {
         val _id: String? = null,
         val users: List<UserInRoom>? = null,
         val deadline: Long? = null,
-//    val history: List<History?>? = null,
         val stages: List<DtStage?>? = null,
 
         val __v: Long? = null

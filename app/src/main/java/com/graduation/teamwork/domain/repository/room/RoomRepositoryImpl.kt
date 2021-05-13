@@ -12,20 +12,15 @@ import io.reactivex.rxjava3.core.Single
 class RoomRepositoryImpl(
     private val apiServer: ApiServer
 ) : RoomRepository {
-
     override fun getAllRoom(): Single<Room> = apiServer.queryAllRoom()
     override fun getAllRoomByGroup(idGroup: String): Single<Room> =
         apiServer.queryRoomInGroup(idGroup)
-
     override fun getRoom(id: String): Single<Room> = apiServer.queryRoom(id)
     override fun getRoomByUser(idUser: String): Single<Room> = apiServer.queryRoomByUser(idUser)
-
     override fun addRoom(name: String, idUser: String): Single<Room> =
         apiServer.addRoom(name, idUser)
-
     override fun addStageInRoom(idRoom: String, nameStage: String, idUser: String): Single<Room> =
         apiServer.addStageInRoom(idRoom, nameStage, idUser)
-
     override fun addTaskInStage(id: String, name: String): Single<Stage> =
         apiServer.addTaskInStage(id, name)
 

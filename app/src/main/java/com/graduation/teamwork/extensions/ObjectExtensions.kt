@@ -1,8 +1,15 @@
 package com.graduation.teamwork.extensions
 
-/**
- * com.graduation.teamwork.extensions
- * Created on 11/8/20
- */
+import com.graduation.teamwork.models.DtUser
 
-//TODO: add extension object here
+fun List<DtUser>.intersectUser(list: List<DtUser>): List<DtUser> {
+    val result = mutableListOf<DtUser>()
+
+    this.forEach {
+        if (list.map { it._id }.contains(it._id)) {
+            result.add(it)
+        }
+    }
+
+    return result
+}

@@ -6,6 +6,7 @@ import com.graduation.teamwork.domain.repository.RemoteRepository
 import com.graduation.teamwork.domain.repository.RemoteRepositoryImpl
 import com.graduation.teamwork.domain.repository.group.GroupRepository
 import com.graduation.teamwork.domain.repository.group.GroupRepositoryImpl
+import com.graduation.teamwork.domain.repository.login.LoginRepositoryImpl
 import com.graduation.teamwork.domain.repository.profile.ProfileRepository
 import com.graduation.teamwork.domain.repository.profile.ProfileRepositoryImpl
 import com.graduation.teamwork.domain.repository.room.RoomRepository
@@ -13,7 +14,6 @@ import com.graduation.teamwork.domain.repository.room.RoomRepositoryImpl
 import com.graduation.teamwork.domain.repository.task.TaskRepository
 import com.graduation.teamwork.domain.repository.task.TaskRepositoryImpl
 import com.graduation.teamwork.domain.resposity.login.LoginRepository
-import com.graduation.teamwork.domain.repository.login.LoginRepositoryImpl
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -31,7 +31,7 @@ val remoteDataSourceModule = module {
     // provided web components
     single { createOkHttpClient() }
     // Fill property
-    single { createWebService<ApiServer>(get(), Configs.Network.BASE_URL.value) }
+    single { createWebService<ApiServer>(get(), Properties.SERVER_URL) }
     single<RoomRepository> { RoomRepositoryImpl(get()) }
     single<LoginRepository> { LoginRepositoryImpl(get()) }
     single<ProfileRepository> { ProfileRepositoryImpl(get()) }
@@ -46,22 +46,23 @@ object Properties {
 }
 
 fun createOkHttpClient(): OkHttpClient {
-    val httpLoggingInterceptor = HttpLoggingInterceptor()
-    httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BASIC
+    val TIME_OUT = 30L
 
-    val TIME_OUT = 60L
+    val httpLoggingInterceptor = HttpLoggingInterceptor()
+    httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
     return OkHttpClient.Builder()
-        .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
-        .readTimeout(TIME_OUT, TimeUnit.SECONDS)
-        .addInterceptor(httpLoggingInterceptor).build()
+            .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .readTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .addInterceptor(httpLoggingInterceptor)
+            .build()
 }
 
 inline fun <reified T> createWebService(okHttpClient: OkHttpClient, url: String): T {
     val retrofit = Retrofit.Builder()
-        .baseUrl(url)
-        .client(okHttpClient)
-        .addConverterFactory(MoshiConverterFactory.create())
-        .addCallAdapterFactory(RxJava3CallAdapterFactory.create()).build()
+            .baseUrl(url)
+            .client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create())
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create()).build()
     return retrofit.create(T::class.java)
 }

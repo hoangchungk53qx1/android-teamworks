@@ -1,23 +1,21 @@
 package com.graduation.teamwork.ui.slider
 
 import android.os.Bundle
-import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.graduation.teamwork.R
-import com.graduation.teamwork.adapters.SliderAdapter
 import com.graduation.teamwork.databinding.FragSliderBinding
 import com.graduation.teamwork.extensions.observeOnUiThread
+import com.graduation.teamwork.extensions.showToast
 import com.graduation.teamwork.models.DtGroup
 import com.graduation.teamwork.models.DtUser
 import com.graduation.teamwork.ui.base.BaseFragment
 import com.graduation.teamwork.ui.main.MainActivity
 import com.graduation.teamwork.utils.PrefsManager
-import com.graduation.teamwork.extensions.showToast
 import com.graduation.teamwork.utils.eventbus.RxBus
 import com.graduation.teamwork.utils.eventbus.RxEvent
 import com.uber.autodispose.android.lifecycle.scope
@@ -43,44 +41,50 @@ class SliderFragment : BaseFragment<FragSliderBinding, MainActivity>() {
      */
     private val viewModel: SliderViewModel by inject()
     private val prefs: PrefsManager by inject()
+    private val slideAdapter = SliderAdapter(emptyList(), this::onClickedItemWith)
 
-    //TODO: data
     private var currentUser: DtUser? = prefs.getUser()
-
-    //    var groups = mutableListOf<Slider>()
-    var groups = mutableListOf<DtGroup>()
-    private val slideAdapter = SliderAdapter(groups, this::onClickedItemWith)
+    private var groups = mutableListOf<DtGroup>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        queryData()
+        setupData()
         setupViews()
         setupListener()
     }
 
-    private fun queryData() {
+    private fun setupData() {
         if (currentUser == null) {
             currentUser = prefs.getUser()
         }
-
         viewModel.getAllGroupByUser(currentUser!!._id!!)
     }
 
-    private fun onClickedItemWith(item: DtGroup, position: Int) {
-        handler?.run {
-            gotoRoom(item._id)
-            closeDrawer()
+    private fun setupViews() {
+        binding?.run {
+            drawerHeader.tvName.text = currentUser!!.fullname
+
+            Glide.with(this@SliderFragment)
+                .load(currentUser?.image?.url)
+                .placeholder(R.drawable.bg_demo_1)
+                .into(drawerHeader.avatar)
+
+            drawerHeader.tvUserName.text = if (currentUser!!.numberphone != null) {
+                currentUser!!.numberphone
+            } else {
+                currentUser!!.mail
+            }
+
+            //setup recyclerview
+            recyclerGroup.run {
+                adapter = slideAdapter
+                setHasFixedSize(true)
+                layoutManager = LinearLayoutManager(context)
+            }
         }
-
-        RxBus.publishToPublishSubject(RxEvent.GroupChanged(item._id))
     }
 
-    fun refresh() {
-        // notifyDataSetChanged must run in main ui thread, if run in not ui thread, it will not update until manually scroll recyclerview
-        handler?.runOnUiThread { slideAdapter.notifyDataSetChanged() }
-    }
-
-    fun setupListener() {
+    private fun setupListener() {
         // View
         binding?.run {
             lnHome.setOnClickListener {
@@ -104,24 +108,20 @@ class SliderFragment : BaseFragment<FragSliderBinding, MainActivity>() {
             handler?.closeDrawer()
         }
 
-        viewModel.resources.observe(viewLifecycleOwner, {
-            Log.d(TAG, "setupListener1: NULL?")
+        viewModel.resources.observe(viewLifecycleOwner) {
             if (it.data != null) {
-                Log.d(TAG, "setupListener1: ${it.data}")
-//                setupData(it.data)
                 groups.clear()
                 groups.addAll(it.data)
 
                 slideAdapter.submitList(groups)
                 refresh()
             }
-        })
+        }
 
         RxBus.listenPublisher(RxEvent.GroupAdded::class.java)
             .observeOnUiThread()
             .autoDisposable(viewLifecycleOwner.scope())
             .subscribe {
-                Log.d(TAG, "setupListener: SLIDER_OK")
                 viewModel.getAllGroupByUser(currentUser!!._id!!)
             }
 
@@ -137,35 +137,22 @@ class SliderFragment : BaseFragment<FragSliderBinding, MainActivity>() {
                         .placeholder(R.drawable.bg_demo_1)
                         .into(drawerHeader.avatar)
                 }
-
             }
     }
 
-    fun setupViews() {
-        Log.d(TAG, "setupViews: ")
-
-        binding?.run {
-            drawerHeader.tvName.text = currentUser!!.fullname
-
-            Glide.with(this@SliderFragment)
-                .load(currentUser?.image?.url)
-                .placeholder(R.drawable.bg_demo_1)
-                .into(drawerHeader.avatar)
-
-            drawerHeader.tvUserName.text = if (currentUser!!.numberphone != null) {
-                currentUser!!.numberphone
-            } else {
-                currentUser!!.mail
-            }
-
-            //setup recyclerview
-            recyclerGroup.run {
-                adapter = slideAdapter
-                setHasFixedSize(true)
-                layoutManager = LinearLayoutManager(context)
-            }
+    private fun onClickedItemWith(item: DtGroup, position: Int) {
+        handler?.run {
+            gotoRoom(item._id)
+            closeDrawer()
         }
 
+        RxBus.publishToPublishSubject(RxEvent.GroupChanged(item._id))
     }
+
+    private fun refresh() {
+        // notifyDataSetChanged must run in main ui thread, if run in not ui thread, it will not update until manually scroll recyclerview
+        handler?.runOnUiThread { slideAdapter.notifyDataSetChanged() }
+    }
+
 
 }

@@ -2,8 +2,9 @@ package com.graduation.teamwork.domain.repository
 
 import com.graduation.teamwork.data.remote.ApiServer
 import com.graduation.teamwork.models.*
-import com.graduation.teamwork.models.data.MemberInRoom
 import io.reactivex.rxjava3.core.Single
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class RemoteRepositoryImpl(
     private val apiServer: ApiServer
@@ -40,6 +41,12 @@ class RemoteRepositoryImpl(
         idUserWillDeleted: String
     ): Single<Room> = apiServer.deleteUserInRoom(idRoom, idUser, idUserWillDeleted)
 
+    override fun deleteMemberInTask(
+        idTask: String,
+        idUser: String,
+        idUserAction: String
+    ): Single<Task> = apiServer.deleteUserInTask(idTask, idUser, idUserAction)
+
     override fun setLevel(
         idRoom: String,
         idUser: String,
@@ -57,6 +64,23 @@ class RemoteRepositoryImpl(
     ): Single<Task> = apiServer.addUserInTask(idTask, idUser, idUserAction)
 
     override fun queryMemberInTask(idTask: String): Single<Task> = apiServer.queryUserInTask(idTask)
+
+    override fun updateLabel(id: String, labels: List<Int>): Single<Task> =
+        apiServer.updateLabel(id, labels)
+
+    override fun queryTaskWithId(id: String): Single<Task> = apiServer.queryTaskWithId(id)
+    override fun uploadImageTask(
+        id: String,
+        part: MultipartBody.Part,
+        idUser: String
+    ): Single<Task> =
+        apiServer.uploadImageTask(id, part, idUser)
+
+    override fun uploadLink(id: String, link: String, idUser: String): Single<Task> =
+        apiServer.addLinkTask(id, link, idUser)
+
+    override fun setCompleted(id: String, name: String, isCompleted: Boolean): Single<Subtask> =
+        apiServer.setCompleted(id, name, isCompleted)
 
 
 }

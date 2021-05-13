@@ -11,13 +11,10 @@ import kotlinx.android.parcel.Parcelize
  */
 
 @Parcelize
-//@Entity(tableName = Constant.TABLE_ROOM.STAGE)
 data class Stage (
     val message: String? = null,
     val totalResult: Long? = null,
-
-//    @Embedded
-//    @TypeConverters(StageConverters::class)
+    
     val data: List<DtStage>? = null
 ) : Parcelable
 

@@ -5,7 +5,6 @@
         android:id="@+id/navBottomHome"
         android:icon="@drawable/ic_home"
         android:title="@string/home" />
-
     <item
         android:id="@+id/navBottomRoom"
         android:icon="@drawable/ic_room"

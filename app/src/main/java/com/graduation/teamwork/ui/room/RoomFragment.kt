@@ -6,34 +6,33 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.graduation.teamwork.R
-import com.graduation.teamwork.adapters.RoomAdapter
 import com.graduation.teamwork.data.local.Constant
 import com.graduation.teamwork.databinding.FragRoomBinding
 import com.graduation.teamwork.extensions.*
-import com.graduation.teamwork.extensions.observeOnUiThread
 import com.graduation.teamwork.models.DtRoom
 import com.graduation.teamwork.models.DtUser
 import com.graduation.teamwork.ui.base.BaseFragment
 import com.graduation.teamwork.ui.main.MainActivity
-import com.graduation.teamwork.ui.task.TaskActivity
+import com.graduation.teamwork.ui.room.details.RoomDetailActivity
 import com.graduation.teamwork.utils.DialogManager
 import com.graduation.teamwork.utils.PrefsManager
 import com.graduation.teamwork.utils.eventbus.RxBus
 import com.graduation.teamwork.utils.eventbus.RxEvent
 import com.uber.autodispose.android.lifecycle.scope
-import com.uber.autodispose.android.scope
 import com.uber.autodispose.autoDisposable
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
 import org.koin.android.ext.android.inject
+import org.koin.core.component.KoinApiExtension
 
 /**
  * com.graduation.teamwork.ui.room
  * Created on 11/15/20
  */
+@KoinApiExtension
 class RoomFragment : BaseFragment<FragRoomBinding, MainActivity>() {
     override fun setBinding(
         inflater: LayoutInflater,
@@ -49,20 +48,17 @@ class RoomFragment : BaseFragment<FragRoomBinding, MainActivity>() {
     private val prefs: PrefsManager by inject()
     private val dialogs: DialogManager by inject()
 
-    //TODO: data
+    private val roomAdapter = RoomAdapter(emptyList()) { item, position ->
+        Intent(activity, RoomDetailActivity::class.java).apply {
+            putExtra(Constant.IntentKey.ID_ROOM.value, item._id!!)
+            startActivity(this)
+            activity?.overridePendingTransition(R.anim.from_right_in, R.anim.nothing)
+        }
+    }
+
     private var currentUser: DtUser? = prefs.getUser()
     private var groupIdCurrent: String = ""
-
-    //TODO: data
     private var rooms = mutableListOf<DtRoom>()
-
-    private val roomAdapter = RoomAdapter(rooms) { item, position ->
-        val intent = Intent(activity, TaskActivity::class.java).apply {
-            putExtra(Constant.INTENT.ROOM.value, item)
-        }
-
-        startActivity(intent)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,15 +68,8 @@ class RoomFragment : BaseFragment<FragRoomBinding, MainActivity>() {
         setupListener()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        prefs.saveLoadOnlyGroup(null)
-    }
-
     override fun onResume() {
         super.onResume()
-
         if (isOnline(requireContext())) {
             if (rooms.isEmpty()) {
                 handler?.showProgress()
@@ -94,14 +83,15 @@ class RoomFragment : BaseFragment<FragRoomBinding, MainActivity>() {
                 )
             }
         }
-
     }
 
-    fun setupData() {
-        if (currentUser == null) {
-            currentUser = prefs.getUser()
-        }
-        handler?.showProgress(getString(R.string.loading_message))
+    override fun onDestroyView() {
+        super.onDestroyView()
+        prefs.saveLoadOnlyGroup(null)
+    }
+
+    private fun setupData() {
+        handler?.showProgress()
 
         if (prefs.getLoadOnlyGroup() == null) {
             viewModel.getRoomByUser(currentUser!!._id!!)
@@ -111,15 +101,12 @@ class RoomFragment : BaseFragment<FragRoomBinding, MainActivity>() {
     }
 
     private fun setupListener() {
-        viewModel.resources.observe(viewLifecycleOwner, {
-            handler?.hideProgres()
-
+        viewModel.resources.observe(viewLifecycleOwner) {
             if (it.data != null) {
                 rooms.clear()
                 rooms.addAll(it.data)
 
                 roomAdapter.submitList(rooms)
-
                 binding?.run {
                     recyclerRoom.visiable()
                     tvEmpty.gone()
@@ -133,31 +120,24 @@ class RoomFragment : BaseFragment<FragRoomBinding, MainActivity>() {
 
             it.data?.let { it1 ->
                 Log.d(TAG, "setupListener: $it1")
-
             }
-        })
+            handler?.hideProgress()
+        }
 
         RxBus.listenPublisher(RxEvent.GroupChanged::class.java)
             .observeOnUiThread()
             .autoDisposable(viewLifecycleOwner.scope())
             .subscribe {
                 groupIdCurrent = it.id
-                handler?.showProgress(getString(R.string.loading_message))
+                handler?.showProgress()
                 viewModel.getAllRoomInGroup(it.id)
             }
-        RxBus.listenPublisher(RxEvent.UpdateRoom::class.java)
-            .observeOnUiThread()
-            .autoDisposable(viewLifecycleOwner.scope())
-            .subscribe {
-                handler?.showProgress(getString(R.string.loading_message))
-                viewModel.getRoomByUser(currentUser!!._id!!)
-            }
 
-        RxBus.listenPublisher(RxEvent.UpdateTask::class.java)
+        RxBus.listenPublisher(RxEvent.RoomUpdate::class.java)
             .observeOnUiThread()
             .autoDisposable(viewLifecycleOwner.scope())
             .subscribe {
-                handler?.showProgress(getString(R.string.loading_message))
+                handler?.showProgress()
                 viewModel.getRoomByUser(currentUser!!._id!!)
             }
 

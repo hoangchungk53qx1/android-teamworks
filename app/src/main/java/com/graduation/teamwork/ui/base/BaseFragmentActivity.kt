@@ -19,20 +19,18 @@ import io.reactivex.disposables.CompositeDisposable
 // https://stackoverflow.com/questions/58731415/android-view-binding-how-implement-binding-in-basic-activity-fragment
 
 abstract class BaseFragment<T : ViewBinding, A : Any> : Fragment() {
-    //TODO: data
-    val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    protected open var binding: T? = null
 
+    protected open var binding: T? = null
     protected open var handler: A? = null //It's base activity
+
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     protected abstract fun setBinding(inflater: LayoutInflater, container: ViewGroup?): T
 
-    private val TAG = "__BaseFragmentActivity"
     override fun onAttach(context: Context) {
         super.onAttach(context)
         @Suppress("UNCHECKED_CAST")
         this.handler = this.activity as? A
-        Log.d(TAG, "onAttach: OK")
     }
 
     override fun onCreateView(
@@ -59,16 +57,4 @@ abstract class BaseFragment<T : ViewBinding, A : Any> : Fragment() {
 
         return isOnline(context)
     }
-//
-//    protected fun getUser(): DtUser? {
-//        return Prefs.getString(Constant.PREFS.USER.value, null).fromDtUser()
-//    }
-//
-//    protected fun saveUser(user: DtUser) {
-//        Prefs.putString(Constant.PREFS.USER.value, user.toJson())
-//    }
-//
-//    protected fun clearUser() {
-//        Prefs.putString(Constant.PREFS.USER.value, null)
-//    }
 }

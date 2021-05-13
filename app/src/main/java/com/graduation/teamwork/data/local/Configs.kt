@@ -7,7 +7,7 @@ package com.graduation.teamwork.data.local
 
 class Configs  {
     enum class Network(val value: String) {
-        BASE_URL("https://server-teamworks.herokuapp.com/")
+        BASE_URL("https://server-teamwork.herokuapp.com/")
 
     }
 }

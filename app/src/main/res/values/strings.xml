@@ -15,12 +15,14 @@
     <string name="register" translatable="false">Register</string>
     <string name="don_t_have_an_account_sign_up" translatable="false">Don\'t have an account ? Sign up</string>
     <string name="home" translatable="false">Home</string>
+    <string name="_home" translatable="false">Work list</string>
     <string name="room" translatable="false">Room</string>
     <string name="notifications" translatable="false">Notifications</string>
     <string name="profiles" translatable="false">Profiles</string>
     <string name="add_task" translatable="false">Add task</string>
     <string name="update" translatable="false">Update</string>
     <string name="settings" translatable="false">Settings</string>
+    <string name="refresh" translatable="false">Refresh</string>
     <string name="help" translatable="false">Help</string>
     <string name="profile" translatable="false">Profile</string>
     <string name="logout" translatable="false">Logout</string>
@@ -40,7 +42,7 @@
     <string name="name_room" translatable="false">name room</string>
     <string name="search" translatable="false">Search...</string>
     <string name="add_stage" translatable="false">Add stage</string>
-    <string name="loading_message" translatable="false">PLease wait...</string>
+    <string name="loading_message" translatable="false">Please wait...</string>
     <string name="notify_empty_stage" translatable="false">Stage can\'t empty</string>
     <string name="notify_connect_wifi" translatable="false">Please connect wifi</string>
     <string name="add_group" translatable="false">Add group</string>
@@ -74,5 +76,17 @@
     <string name="notification_schedule_error" translatable="false">
         Schedule notification: Incorrect Date and Time
     </string>
-    <string name="send_slide_member">send_slide_member</string>
+    <string name="steps" translatable="false">Hướng dẫn sử dụng</string>
+    <string name="step_1" translatable="false">Click on [img src=ic_action_settings/]
+        icon để đến màn hình Cài đặt có thể thêm nhiều ứng dụng</string>
+    <string name="step_2" translatable="false">Click on [img src=ic_action_refresh/]
+        icon để làm mới các ứng dụng</string>
+    <string name="step_3" translatable="false">Thời gian sử dụng trong một ngày là số phút, trong một tuần là số giờ</string>
+    <string name="step_4" translatable="false">Phóng to hoặc thu nhỏ để có thể nhìn rõ ràng dữ liệu</string>
+    <string name="step_5" translatable="false">Cuộn theo chiều ngang để xem tất cả các ứng dụng</string>
+    <string name="no_data" translatable="false">Chọn ứng dụng từ cài đặt để có thể theo dõi thời gian sử dụng ứng dụng</string>
+    <string name="send_slide_member" translatable="false">send_slide_member</string>
+
+    <string name="networks_stats_na" translatable="false">Xin lỗi, tính năng không hỗ trợ trên Android của bạn</string>
+    <string name="network_stats" translatable="false">Network Stats</string>
 </resources>

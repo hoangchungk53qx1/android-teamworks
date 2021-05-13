@@ -8,9 +8,12 @@ import io.reactivex.rxjava3.core.Single
 
 class TaskRepositoryImpl(
     private val apiServer: ApiServer
-): TaskRepository {
-    override fun addTaskInStage(id: String, name: String): Single<Stage> = apiServer.addTaskInStage(id, name)
-    override fun addStageInRoom(id: String, name: String, idUser: String): Single<Room> = apiServer.addStageInRoom(id, name, idUser)
+) : TaskRepository {
+    override fun addTaskInStage(id: String, name: String): Single<Stage> =
+        apiServer.addTaskInStage(id, name)
+
+    override fun addStageInRoom(id: String, name: String, idUser: String): Single<Room> =
+        apiServer.addStageInRoom(id, name, idUser)
 
     override fun getAllUser(): Single<User> = apiServer.queryAllUser()
 
@@ -32,4 +35,6 @@ class TaskRepositoryImpl(
         idUserWillSet: String,
         level: Int
     ): Single<Room> = apiServer.setLevel(idRoom, idUser, idUserWillSet, level)
+
+    override fun getRoomWith(id: String): Single<Room> = apiServer.queryRoom(id)
 }

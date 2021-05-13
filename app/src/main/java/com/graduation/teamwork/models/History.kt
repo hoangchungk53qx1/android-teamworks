@@ -23,7 +23,6 @@ data class DtHistory(
     val updateAt: Long? = null,
 ) : Parcelable
 
-
 @Parcelize
 data class HistoryType(
     val category: String? = null,

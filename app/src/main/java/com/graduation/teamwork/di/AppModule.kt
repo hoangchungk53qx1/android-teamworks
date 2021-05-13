@@ -7,12 +7,14 @@ import com.graduation.teamwork.ui.main.MainViewModel
 import com.graduation.teamwork.ui.profile.ProfileViewModel
 import com.graduation.teamwork.ui.room.RoomViewModel
 import com.graduation.teamwork.ui.slider.SliderViewModel
-import com.graduation.teamwork.ui.task.TaskViewModel
+import com.graduation.teamwork.ui.room.details.RoomDetailViewModel
 import com.graduation.teamwork.ui.task.details.DetailViewModel
+import com.graduation.teamwork.utils.AppHelper
 import com.graduation.teamwork.utils.DialogManager
 import com.graduation.teamwork.utils.FirebaseManager
 import com.graduation.teamwork.utils.PrefsManager
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.component.KoinApiExtension
 import org.koin.dsl.module
 
 /**
@@ -20,14 +22,9 @@ import org.koin.dsl.module
  * Created on 11/10/20
  */
 
+@OptIn(KoinApiExtension::class)
 @JvmField
 val appModule = module {
-
-//    // scope for RoomFragment
-//    scope(named<RoomFragment>()) {
-//        // scoped RoomViewModel instance
-//        scoped { RoomViewModel(get()) }
-//    }
 
     // viewmodel
     viewModel { RoomViewModel(get()) }
@@ -36,7 +33,7 @@ val appModule = module {
     viewModel { ProfileViewModel(get()) }
     viewModel { SliderViewModel(get()) }
     viewModel { AddViewModel(get()) }
-    viewModel { TaskViewModel(get()) }
+    viewModel { RoomDetailViewModel(get()) }
     viewModel { DetailViewModel(get()) }
     viewModel { MainViewModel(get()) }
 
@@ -44,6 +41,7 @@ val appModule = module {
     single { PrefsManager() }
     single { DialogManager() }
     single { FirebaseManager() }
+    single { AppHelper() }
 
 }
 

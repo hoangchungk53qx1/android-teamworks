@@ -4,11 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.graduation.teamwork.R
 
@@ -43,6 +46,33 @@ fun isOnline(context: Context): Boolean {
 val Context.versionCode: Int
     get() = packageManager.getPackageInfo(packageName, 0).versionCode
 
+
+/**
+ * INTENT
+ */
+
+fun Context.shareApp(message: String) {
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, R.string.app_name)
+        putExtra(Intent.EXTRA_TEXT, message)
+    }
+    startActivity(Intent.createChooser(shareIntent, "Choose One"))
+}
+
+fun Context.gotoUrl(url: String) {
+    var newUrl = url
+    if (!(url.startsWith("http://") || url.startsWith("https://"))) {
+        newUrl = "http://$url"
+    }
+    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(newUrl))
+    ContextCompat.startActivity(this, browserIntent, null)
+}
+
+/**
+ * NOTI
+ */
+
 fun Context.showToast(@StringRes res: Int, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, res, duration).show()
 }
@@ -64,8 +94,7 @@ fun Context.showSnackbar(
 	message: String,
 	duration: Int = Snackbar.LENGTH_SHORT
 ) {
-    Snackbar.make(view, message, duration)
-        .show()
+    Snackbar.make(view, message, duration).show()
 }
 
 fun Context.showSnackbar(
@@ -78,8 +107,7 @@ fun Context.showSnackbar(
     Snackbar.make(view, message, duration)
         .setAction(messageAction) { _ ->
             actionOk()
-        }
-        .show()
+        }.show()
 }
 
 fun Context.showSnackbar(
@@ -92,20 +120,46 @@ fun Context.showSnackbar(
     Snackbar.make(view, message, duration)
         .setAction(messageAction) { _ ->
             actionOk()
-        }
-        .show()
+        }.show()
 }
 
-/**
- * INTENT
- */
+fun Context.showAlert(
+        title: String = "",
+        message: String,
+        strOk: String = "OK",
+        strCancel: String = "CANCEL",
+        onCancel: () -> Unit,
+        onOk: () -> Unit
+) {
+    val alertBuilder = AlertDialog.Builder(this)
+    alertBuilder
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(strOk) { dialog, _ ->
+                onOk()
+                dialog.dismiss()
+            }
+            .setNegativeButton(strCancel) { dialog, _ ->
+                onCancel()
+                dialog.dismiss()
+            }
+            .show()
+}
 
-fun Context.shareApp(message: String) {
-    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_SUBJECT, R.string.app_name)
-        putExtra(Intent.EXTRA_TEXT, message)
-    }
 
-    startActivity(Intent.createChooser(shareIntent, "Choose One"))
+fun Context.showAlert(
+        title: String = "SUCCESS",
+        message: String,
+        strOk: String = "OK",
+        onOk: () -> Unit
+) {
+    val alertBuilder = AlertDialog.Builder(this)
+    alertBuilder
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(strOk) { _, _ ->
+                onOk()
+            }
+            .setCancelable(false)
+            .show()
 }

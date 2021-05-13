@@ -6,11 +6,12 @@
     <string name="alert_ok" translatable="false">Đồng ý</string>
     <string name="alert_cancel" translatable="false">Huỷ bỏ</string>
     <string name="empty_value" translatable="false">Danh sách rỗng</string>
-    <string name="mail" translatable="false">email</string>
-    <string name="password" translatable="false">mật khẩu</string>
+    <string name="mail" translatable="false">Email</string>
+    <string name="password" translatable="false">Mật khẩu</string>
     <string name="login" translatable="false">Đăng Nhập</string>
     <string name="don_t_have_an_account_sign_up" translatable="false">Bạn không có tài khoản? Đăng ký ngay</string>
     <string name="home" translatable="false">Trang chủ</string>
+    <string name="_home" translatable="false">Danh sách công việc</string>
     <string name="room" translatable="false">Phòng</string>
     <string name="notifications" translatable="false">Thông báo</string>
     <string name="profiles" translatable="false">Cá nhân</string>

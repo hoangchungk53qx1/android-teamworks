@@ -1,6 +1,5 @@
 package com.graduation.teamwork.extensions
 
-import android.util.Log
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
@@ -19,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
  * https://stackoverflow.com/questions/49726385/listadapter-not-updating-item-in-reyclerview
  */
 fun <T, VH : RecyclerView.ViewHolder> ListAdapter<T, VH>.updateList(list: List<T>?) {
-    // ListAdapter<>.submitList() contains (stripped):
       if (list == this.currentList) {
           // nothing to do
           return;

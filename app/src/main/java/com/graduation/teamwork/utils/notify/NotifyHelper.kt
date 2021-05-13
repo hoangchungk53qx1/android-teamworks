@@ -16,12 +16,11 @@ import java.util.concurrent.TimeUnit
 class NotifyHelper private constructor(context: Context) {
     private val mWorkManager: WorkManager = WorkManager.getInstance(context)
     private val workInfor: LiveData<List<WorkInfo>>
-    
     fun schedule(timeDelay: Long) {
         val oneRequest = OneTimeWorkRequestBuilder<ScheduleWorker>()
             .setInitialDelay(timeDelay, TimeUnit.MILLISECONDS)
             .build()
-            mWorkManager
+        mWorkManager
             .enqueue(oneRequest)
     }
 
@@ -81,6 +80,6 @@ class NotifyHelper private constructor(context: Context) {
     }
 
     init {
-        workInfor = mWorkManager.getWorkInfosByTagLiveData(Constant.NOTIFY.WORKER_NAME)
+        workInfor = mWorkManager.getWorkInfosByTagLiveData(Constant.NotifyKey.WORKER_NAME)
     }
 }

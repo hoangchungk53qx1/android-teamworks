@@ -9,6 +9,16 @@ import kotlinx.android.parcel.Parcelize
  * Created on 11/24/20
  */
 
+/**
+ * type of  attachment
+ * 0: image
+ * 1: file
+ * 2: link
+ */
+enum class TypeAttachment(val value: String) {
+   IMAGE("image"),
+   LINK("link")
+}
 
 @Parcelize
 data class Attachment(

@@ -4,6 +4,8 @@ import com.graduation.teamwork.models.*
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 
 class ApiServerImpl(private val apiServer: ApiServer) : ApiServer {
     override fun queryAllUser(): Single<User> = apiServer.queryAllUser()
@@ -62,7 +64,8 @@ class ApiServerImpl(private val apiServer: ApiServer) : ApiServer {
 
     override fun queryStageInRoom(idRoom: String): Single<Room> = apiServer.queryStageInRoom(idRoom)
 
-    override fun queryUserInRoom(idRoom: String): Single<BaseModel> = apiServer.queryUserInRoom(idRoom)
+    override fun queryUserInRoom(idRoom: String): Single<BaseModel> =
+        apiServer.queryUserInRoom(idRoom)
 
     override fun addRoom(
         name: String, idUser: String
@@ -101,7 +104,17 @@ class ApiServerImpl(private val apiServer: ApiServer) : ApiServer {
     override fun addTaskInStage(id: String, name: String): Single<Stage> =
         apiServer.addTaskInStage(id, name)
 
+    override fun onMoveTask(
+        idStageFrom: String,
+        idStageTo: String,
+        idTask: String
+    ): Single<ResponseBody> = apiServer.onMoveTask(idStageFrom, idStageTo, idTask)
+
+    override fun onDeleteTask(idStage: String, idTask: String): Single<Stage> =
+        onDeleteTask(idStage, idTask)
+
     override fun queryAllTask(): Single<Task> = apiServer.queryAllTask()
+    override fun queryTaskWithId(id: String): Single<Task> = apiServer.queryTaskWithId(id)
 
     override fun addSubtaskInTask(idTask: String, nameSubtask: String, idUser: String) =
         apiServer.addSubtaskInTask(idTask, nameSubtask, idUser)
@@ -117,9 +130,9 @@ class ApiServerImpl(private val apiServer: ApiServer) : ApiServer {
 
     override fun deleteUserInTask(
         idTask: String,
-        idCategory: String,
+        idUser: String,
         idUserAction: String
-    ): Single<Task> = apiServer.deleteUserInTask(idTask, idCategory, idUserAction)
+    ): Single<Task> = apiServer.deleteUserInTask(idTask, idUser, idUserAction)
 
     override fun addLinkTask(idTask: String, link: String, idUser: String): Single<Task> =
         apiServer.addLinkTask(idTask, link, idUser)
@@ -130,7 +143,13 @@ class ApiServerImpl(private val apiServer: ApiServer) : ApiServer {
     override fun changeDeadline(id: String, deadline: Long, idUser: String): Single<Task> =
         apiServer.changeDeadline(id, deadline, idUser)
 
+    override fun updateLabel(id: String, labels: List<Int>): Single<Task> =
+        apiServer.updateLabel(id, labels)
+
     override fun queryAllSubtask(): Single<Subtask> = apiServer.queryAllSubtask()
+
+    override fun setCompleted(id: String, name: String, isCompleted: Boolean): Single<Subtask> =
+        apiServer.setCompleted(id, name, isCompleted)
 
     override fun queryAllHistory(): Single<History> = apiServer.queryAllHistory()
 
