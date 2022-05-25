@@ -71,7 +71,7 @@ dependencies {
     implementation 'io.reactivex.rxjava3:rxjava:3.0.6'
 
     // animation recyclerview
-    implementation 'jp.wasabeef:recyclerview-animators:4.0.1'
+    implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
 
     // circle image
     implementation 'de.hdodenhof:circleimageview:3.1.0'
