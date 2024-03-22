@@ -164,7 +164,7 @@ dependencies {
     implementation 'com.github.GrenderG:Toasty:1.5.2'
 
     // load image
-    def pickerVersion = "1.0.0" //look-up the latest one on jitpack
+    def pickerVersion = "1.1.1" //look-up the latest one on jitpack
 
     //the core package is a must then you include the one you need
     implementation "com.github.FunkyMuse.MediaPicker:core:$pickerVersion"
