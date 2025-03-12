@@ -137,7 +137,7 @@ dependencies {
     //noinspection GradleDependency
     implementation "org.koin:koin-core:$koin_version"
 
-    implementation "androidx.preference:preference-ktx:1.1.1"
+    implementation "androidx.preference:preference-ktx:1.2.1"
 
     // autodispose
     implementation "com.uber.autodispose:autodispose-android-archcomponents:$autodispose_version"
